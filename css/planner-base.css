@@ -1,0 +1,3142 @@
+/* ── PLANNER BASE — Variables, layout y estructura general ── */
+
+@import '/components/core/styles/style-base.css';
+
+/* ── Variables del planner ── */
+:root {
+    --planner-font-heading: 'Noto Serif', Georgia, 'Times New Roman', serif;
+    --planner-font-body: 'Noto Serif', Georgia, 'Times New Roman', serif;
+    --planner-heading-weight: 700;
+    --planner-line-weight: 1;
+    --planner-text-factor: 1;
+    --planner-title-factor: 1;
+    --planner-color-ink: #3d3a34;
+    /* Fallback estático (pre-JS); en runtime lo recalcula applyDesignConfig desde el color de
+       texto elegido — ver planner-design-panel.ts, donde vive el contraste real. */
+    --planner-color-ink-light: #8a8578;
+    --planner-color-line: #d4d0c8;
+    --planner-color-line-light: #e8e5de;
+    --planner-color-paper: #faf9f6;
+    --planner-color-notes-bg: #edecea;
+    --planner-color-sunday: #3d3a34;
+    --planner-month-0: #4a90d9;
+    --planner-month-1: #5dade2;
+    --planner-month-2: #48c9b0;
+    --planner-month-3: #52be80;
+    --planner-month-4: #27ae60;
+    --planner-month-5: #d4ac0d;
+    --planner-month-6: #f39c12;
+    --planner-month-7: #e74c3c;
+    --planner-month-8: #e67e22;
+    --planner-month-9: #c0392b;
+    --planner-month-10: #8e44ad;
+    --planner-month-11: #5b2c6f;
+    --planner-page-width: 148mm;
+    --planner-page-height: 210mm;
+    --planner-page-padding: 10mm;
+}
+
+/* ── Layout principal ── */
+#app {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    min-height: calc(100vh - var(--header-height));
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    overflow-x: hidden;
+}
+
+/* ── CONFIG PANEL (abre desde Guardar) ── */
+.planner-config {
+    position: fixed;
+    z-index: 1005;
+    width: 320px;
+    /* 88vh, no 80: con 80 la config más alta (Planner: 651 px de contenido + 136 de chrome) se
+       pasaba 35 px en una ventana de 940 y sacaba barra por nada. Con 88 caben las cuatro. */
+    max-height: 88vh;
+    /* Cabecera y footer CLAVADOS, scroll solo en `__scroll`: el panel no scrolla. */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 16px;
+    box-sizing: border-box;
+    border-radius: 16px;
+    background: var(--pl-bg-1);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(13, 27, 42, 0.12);
+    box-shadow: var(--pl-sh-1);
+    font-family: 'Noto Serif', Georgia, 'Times New Roman', serif;
+    color: #444;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pl-x-1);
+}
+
+/* Se enfoca por programa al abrir (tabIndex -1): el anillo es de sus controles, no del panel entero */
+.planner-config:focus {
+    outline: none;
+}
+
+/* La franja del medio: lo único que scrolla. `min-height: 0` es obligatorio — sin él un hijo
+   flex no encoge por debajo de su contenido y volvería a scrollar el panel entero. */
+.planner-config__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pl-x-1);
+}
+
+.planner-config__header,
+.planner-config__divider,
+.planner-config__footer {
+    flex-shrink: 0;
+}
+
+/* Custom scrollbar — slim, rounded, inside panel padding */
+.planner-config__scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.planner-config__scroll::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 12px 0;
+}
+.planner-config__scroll::-webkit-scrollbar-thumb {
+    background: var(--pl-bg-28);
+    border-radius: 3px;
+}
+.planner-config__scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--pl-bg-29);
+}
+
+/* Desktop: sobre el toolbar para no tapar el documento */
+@media screen and (min-width: 729px) {
+    .planner-config {
+        left: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+.planner-config[hidden] {
+    display: none;
+}
+
+.planner-config:not([hidden]) {
+    animation: panelFadeIn 0.15s ease;
+}
+
+@keyframes panelFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.planner-config__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--pl-tx-1);
+    letter-spacing: 0.4px;
+    text-align: left;
+    margin-bottom: 12px;
+    min-height: 28px;
+    padding-right: 34px;
+}
+
+.planner-config__body[hidden] {
+    display: none;
+}
+
+.planner-config__section {
+    margin-bottom: 10px;
+}
+
+.planner-config__section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--pl-tx-2);
+    margin-bottom: 8px;
+}
+
+.planner-config__divider {
+    height: 1px;
+    background: var(--pl-bg-2);
+    margin: 12px 0;
+}
+
+/* ── Config: Month navigation ── */
+.planner-config__month-label {
+    display: block;
+    text-align: center;
+    font-family: var(--planner-font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--pl-tx-3);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 10px;
+}
+
+.planner-config__nav-arrows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.planner-config__nav-btn {
+    background: var(--pl-bg-3);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 8px 0;
+    font-size: 0.7rem;
+    color: var(--pl-tx-4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.planner-config__nav-btn:hover {
+    border-color: var(--pl-bd-1);
+    transform: translateY(-1px);
+}
+
+.planner-config__nav-btn:active {
+    background: var(--pl-bg-4);
+    color: var(--pl-tx-5);
+    border-color: var(--pl-bd-2);
+}
+
+/* ── Config: Day pills ── */
+.planner-config__pills {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.planner-config__pills-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.planner-config__pill {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    background: var(--pl-bg-3);
+    color: var(--pl-tx-4);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.planner-config__pill:hover {
+    border-color: var(--pl-bd-17);
+}
+
+.planner-config__pill.is-active {
+    background: var(--pl-bg-5);
+    color: var(--pl-tx-5);
+    border-color: var(--pl-bd-3);
+}
+
+.planner-config__pill--title {
+    font-style: italic;
+    border-style: dashed;
+    margin-right: 4px;
+}
+
+.planner-config__pill--title.is-active {
+    border-style: solid;
+}
+
+.planner-config__pills-sep {
+    display: block;
+    width: 1px;
+    height: 20px;
+    background: var(--pl-bg-6);
+    margin: 0 2px;
+    align-self: center;
+}
+
+.planner-config__pill--align {
+    font-size: 13px;
+}
+
+/* ── Config: Toggle row (Título / Nº Semana) ── */
+.planner-config__toggle-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.planner-config__toggle-btn {
+    background: var(--pl-bg-3);
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    padding: 8px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--pl-tx-4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.planner-config__toggle-btn:hover {
+    border-color: var(--pl-bd-1);
+    transform: translateY(-1px);
+}
+
+.planner-config__toggle-btn.is-active {
+    background: var(--pl-bg-5);
+    color: var(--pl-tx-5);
+    border-color: var(--pl-bd-3);
+}
+
+.planner-config__toggle-btn.is-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.planner-config__toggle-btn--wide {
+    grid-column: 1 / -1;
+    gap: 6px;
+}
+
+.planner-config__toggle-btn--inline {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+    justify-content: flex-start;
+}
+
+/* Compact orientation square */
+.planner-config__toggle-btn--square {
+    width: 40px;
+    padding: 8px 0;
+    flex-shrink: 0;
+}
+
+/* ── Config: Title input row (eye toggle + text input) ── */
+.planner-config__title-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.planner-config__eye-btn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--pl-tx-11);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.planner-config__eye-btn:hover {
+    border-color: var(--pl-bd-4);
+    color: var(--pl-tx-10);
+}
+
+.planner-config__eye-btn.is-active {
+    border-color: var(--pl-bd-3);
+    background: var(--pl-bg-5);
+    color: var(--pl-tx-5);
+}
+
+.planner-config__title-input-row .planner-config__toggle-btn {
+    flex-shrink: 0;
+    width: 40px;
+    padding: 8px 0;
+}
+
+.planner-config__title-input {
+    flex: 1;
+    background: #fff;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.planner-config__title-input:focus {
+    border-color: #555;
+}
+
+.planner-config__title-input:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Config: Searchable dropdown selectors (Festivos / CCAA / Capital) ── */
+.planner-config__selectors {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.planner-config__select-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.planner-config__select-row.is-disabled {
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+.planner-config__select-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--pl-tx-16);
+    min-width: 56px;
+    flex-shrink: 0;
+}
+
+/* ── Sheet «Más»: filas de panel ── */
+.planner-mas {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* Los 14px de abajo NO son estética: sin ellos la última fila toca el borde y la barra del navegador la corta. */
+    padding: 2px 2px 14px;
+}
+
+.planner-mas__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid var(--edt-btn-border);
+    border-radius: var(--edt-btn-radius, 10px);
+    background: var(--edt-btn-bg);
+    color: var(--edt-btn-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+/* El display:flex de la fila gana al [hidden] del navegador: sin esto «Traducir» saldría siempre. */
+.planner-mas__row[hidden] {
+    display: none;
+}
+
+.planner-mas__row:disabled,
+.planner-mas__row--desktop-only {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.planner-mas__row:hover:not(:disabled) {
+    border-color: var(--edt-btn-border-hover);
+}
+
+.planner-mas__row.is-active {
+    background: var(--edt-btn-solid-bg);
+    border-color: var(--edt-btn-solid-bg);
+    color: var(--edt-btn-solid-text);
+}
+
+.planner-mas__row i {
+    font-size: 18px;
+    width: 22px;
+    text-align: center;
+}
+
+.planner-mas__value {
+    margin-left: auto;
+}
+
+/* «Más» solo existe en móvil: en escritorio todo cabe en la pill (P5). */
+.planner-toolbar__btn--mas {
+    display: none;
+}
+
+/* Textos abierto: sin velo, porque se edita el folio. El JS pone sus botones `inert`; aquí solo se apaga. */
+#plannerToolbar.is-blocked {
+    opacity: 0.45;
+    filter: grayscale(0.3);
+    cursor: not-allowed;
+}
+
+.planner-config__nodata {
+    font-size: 11px;
+    font-style: italic;
+    color: #888;
+    margin: 2px 0;
+}
+
+/* Foco por teclado: el `outline: none` de arriba lo quitaba sin reemplazo.
+   En un <input> :focus-visible también matchea con foco de ratón, que es lo correcto aquí. */
+
+/* ── Config: Hour inputs (2 per row grid) ── */
+.planner-config__hours {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ── Config: Title row (eye icon + text input, mirrors hour-row layout) ── */
+.planner-config__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    width: 100%;
+}
+
+.planner-config__title-eye {
+    font-size: 13px;
+    color: var(--pl-tx-9);
+    transition: color 0.15s ease;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.planner-config__title-eye:hover {
+    color: var(--pl-tx-10);
+}
+
+.planner-config__hour-row .planner-config__title-input {
+    text-align: left;
+    padding: 6px 8px;
+    min-height: 30px;
+}
+
+.planner-config__title-input:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* ── Hour increment: top row with toggle + recalculate ── */
+.planner-config__hour-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+    margin-bottom: 4px;
+}
+
+.planner-config__hour-inc-toggle {
+    cursor: pointer;
+}
+
+.planner-config__hour-inc-inline {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+    text-align: center;
+    color: var(--pl-tx-7);
+    outline: none;
+    padding: 0;
+}
+
+.planner-config__hour-recalc-btn {
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+/* Idle hover: button turns blue */
+.planner-config__hour-recalc-btn:hover {
+    background: var(--pl-bg-8);
+    border-color: var(--pl-bd-5);
+    color: var(--pl-tx-14);
+}
+
+/* Contextual active: button blue when a hour input is focused */
+.planner-config__hour-recalc-btn.is-apply-active {
+    background: var(--pl-bg-9);
+    border-color: var(--pl-bd-6);
+    color: var(--pl-tx-14);
+}
+
+/* Contextual target: subsequent hour inputs highlighted */
+.planner-config__hour-input.is-apply-target {
+    background: var(--pl-bg-9);
+    border-color: var(--pl-bd-6);
+}
+
+/* Flash feedback after recalc */
+@keyframes hour-flash {
+    0% {
+        background: rgba(74, 144, 217, 0.25);
+        border-color: rgba(74, 144, 217, 0.5);
+    }
+    100% {
+        background: transparent;
+        border-color: rgba(0, 0, 0, 0.15);
+    }
+}
+
+.planner-config__hour-input.is-flash {
+    animation: var(--pl-x-2);
+}
+
+/* ── Hour grid (2 per row) ── */
+.planner-config__hour-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+}
+
+.planner-config__hour-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    width: 100%;
+}
+
+.planner-config__hour-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pl-tx-8);
+    width: 18px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.planner-config__hour-label--remove {
+    color: #c0392b;
+    font-size: 13px;
+    text-align: center;
+    transition: color 0.15s ease;
+}
+
+.planner-config__hour-label--remove:hover {
+    color: #e74c3c;
+}
+
+.planner-config__hour-input {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 4px;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: inherit;
+    text-align: center;
+    color: var(--pl-tx-6);
+    outline: none;
+    transition: border-color 0.2s ease;
+    min-height: 30px;
+    box-sizing: border-box;
+}
+
+.planner-config__hour-input:focus {
+    border-color: var(--pl-bd-3);
+}
+
+.planner-config__hour-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: var(--pl-bg-7);
+    color: var(--pl-tx-12);
+    font-size: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    padding: 0;
+}
+
+.planner-config__hour-remove:hover {
+    background: rgba(231, 76, 60, 0.25);
+}
+
+/* Preview slot: ghost input showing next hour */
+.planner-config__hour-preview {
+    opacity: 0.4;
+    cursor: pointer;
+    font-style: italic;
+}
+
+.planner-config__hour-label--add {
+    transition: color 0.15s ease;
+}
+
+.planner-config__hour-label--add:hover {
+    color: var(--pl-tx-13);
+}
+
+/* ── Config: Accent color swatches ── */
+.planner-config__accent-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.planner-config__edit-text-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.planner-config__edit-text-row .planner-config__toggle-btn--inline {
+    flex: 1;
+}
+
+.planner-config__accent-swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        transform 0.1s ease;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.planner-config__accent-swatch:hover {
+    transform: scale(1.15);
+}
+
+.planner-config__accent-swatch.is-active {
+    border-color: var(--pl-bd-7);
+    box-shadow: var(--pl-sh-2);
+}
+
+.planner-config__accent-swatch--none {
+    background: var(--pl-bg-10);
+    border: 2px dashed rgba(0, 0, 0, 0.2);
+    color: var(--pl-tx-15);
+    font-size: 11px;
+}
+
+.planner-config__accent-swatch--none.is-active {
+    border-style: solid;
+    border-color: #333;
+}
+
+/* ── Config: Number controls (± stepper) ── */
+.planner-config__num-controls {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+/* ── Individual reset button (next to num-controls or font selector) ── */
+.planner-config__num-reset {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--pl-tx-11);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: 6px;
+    flex-shrink: 0;
+}
+
+.planner-config__num-reset:hover:not(:disabled) {
+    border-color: rgba(243, 156, 18, 0.4);
+    background: rgba(243, 156, 18, 0.1);
+    color: var(--pl-tx-18);
+}
+
+.planner-config__num-reset:disabled {
+    opacity: 0.25;
+    cursor: default;
+    pointer-events: none;
+}
+
+.planner-config__num-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background: var(--pl-bg-3);
+    color: var(--pl-tx-4);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.planner-config__num-btn:first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+.planner-config__num-btn + .planner-config__num-input + .planner-config__num-btn {
+    border-radius: 0 6px 6px 0;
+}
+
+.planner-config__num-btn:hover:not(:disabled) {
+    background: var(--pl-bg-11);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.planner-config__num-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* Bold toggle "B" button inside num-controls */
+.planner-config__bold-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    background: var(--pl-bg-3);
+    color: var(--pl-tx-17);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-left: 6px;
+}
+
+.planner-config__bold-btn b {
+    font-weight: 900;
+    font-size: 12px;
+}
+
+.planner-config__bold-btn:hover {
+    background: var(--pl-bg-11);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.planner-config__bold-btn.is-bold {
+    background: var(--pl-bg-12);
+    color: var(--pl-tx-5);
+    border-color: var(--pl-bd-7);
+}
+
+.planner-config__bold-btn.is-light {
+    background: var(--pl-bg-13);
+    color: #e74c3c;
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+.planner-config__bold-btn.is-light:hover {
+    background: rgba(231, 76, 60, 0.15);
+}
+
+.planner-config__num-value {
+    min-width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    background: var(--pl-bg-14);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pl-tx-10);
+}
+
+.planner-config__num-input {
+    width: 32px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    background: var(--pl-bg-14);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pl-tx-10);
+    text-align: center;
+    padding: 0;
+    outline: none;
+    -moz-appearance: textfield;
+    font-family: inherit;
+}
+
+.planner-config__num-input::-webkit-outer-spin-button,
+.planner-config__num-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+/* ── Config: Footer actions ── */
+.planner-config__footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.planner-config__edit-cells {
+    display: flex;
+    gap: 6px;
+    padding: 4px 0;
+    align-items: stretch;
+}
+
+.planner-config__edit-cells .planner-config__action-btn {
+    flex: 1;
+}
+
+.planner-config__clear-group {
+    display: flex;
+    gap: 4px;
+    align-items: stretch;
+}
+
+.planner-config__clear-group--full {
+    justify-content: center;
+    padding: 4px 0;
+}
+
+.planner-config__clear-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--pl-tx-17);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.planner-config__clear-btn:hover {
+    color: #e74c3c;
+    border-color: rgba(231, 76, 60, 0.3);
+    background: var(--pl-bg-38);
+}
+
+.planner-config__clear-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+}
+
+.planner-config__section-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #888;
+    text-transform: uppercase;
+    padding: 2px 0 0;
+}
+
+.planner-config__section-label--inline {
+    display: inline;
+    padding: 0;
+    padding-left: 10px;
+    font-size: 11px;
+    min-width: 52px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    align-self: center;
+    color: #7b68a0;
+}
+
+/* ── Action buttons: BASE first, then variants ── */
+.planner-config__action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.planner-config__action-btn--blue {
+    background: var(--pl-bg-30);
+    border-color: var(--pl-bd-18);
+    color: var(--pl-tx-14);
+}
+
+.planner-config__action-btn--blue:hover {
+    background: var(--pl-bg-31);
+    border-color: var(--pl-bd-19);
+}
+
+.planner-config__action-btn--secondary {
+    background: var(--pl-bg-32);
+    border-color: var(--pl-bd-20);
+    color: var(--pl-tx-8);
+}
+
+.planner-config__action-btn--secondary:hover {
+    background: var(--pl-bg-33);
+    border-color: rgba(243, 156, 18, 0.35);
+    color: var(--pl-tx-18);
+}
+
+.planner-config__action-btn--toggle {
+    background: var(--pl-bg-32);
+    border-color: var(--pl-bd-20);
+    color: var(--pl-tx-8);
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        color 0.15s;
+}
+
+.planner-config__action-btn--toggle:hover {
+    background: var(--pl-bg-34);
+    border-color: rgba(74, 144, 217, 0.35);
+    color: var(--pl-tx-28);
+}
+
+.planner-config__action-btn--toggle.is-active {
+    background: var(--pl-bg-35);
+    border-color: rgba(74, 144, 217, 0.5);
+    color: var(--pl-tx-28);
+}
+
+.planner-config__action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.planner-config__action-btn--danger {
+    background: var(--pl-bg-32);
+    border-color: var(--pl-bd-20);
+    color: var(--pl-tx-8);
+}
+
+.planner-config__action-btn--danger:hover {
+    background: var(--pl-bg-36);
+    border-color: var(--pl-bd-21);
+    color: var(--pl-tx-12);
+}
+
+.planner-config__action-btn--warning {
+    background: var(--pl-bg-33);
+    border-color: var(--pl-bd-22);
+    color: var(--pl-tx-18);
+}
+
+.planner-config__action-btn--warning:hover {
+    background: var(--pl-bg-37);
+    border-color: var(--pl-bd-23);
+}
+
+.planner-config__action-btn--reset {
+    display: none;
+}
+
+.planner-config__reset-btn {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--pl-tx-11);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.planner-config__reset-btn:hover {
+    border-color: var(--pl-bd-24);
+    background: var(--pl-bg-7);
+    color: var(--pl-tx-12);
+}
+
+.planner-config__info-btn {
+    position: absolute;
+    top: 50%;
+    right: 36px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(74, 144, 217, 0.2);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--pl-tx-29);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.planner-config__info-btn:hover {
+    border-color: var(--pl-bd-25);
+    background: var(--pl-bg-39);
+}
+
+/* Velo de los paneles del chrome (escritorio): TRANSPARENTE a propósito — recoge el «clic fuera»
+   que cierra el panel, pero teñir el folio impedía apreciar los colores al elegirlos en Diseño y
+   Temas. El único que sí pinta es el del modal de descarga (`.planner-export-modal`). */
+.planner-config-backdrop {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: 1004;
+}
+
+/* ── Contenedor de páginas ── */
+/* Escala del searchable-select compartido dentro de los paneles del planner: 11px/28px, no los
+   13px/34px por defecto. El README del componente contempla este override. */
+.planner-config .edt-ss-outer {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+}
+
+.planner-config .edt-ss-display {
+    padding: 5px 8px;
+    border-width: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    min-height: 28px;
+}
+
+/* ⚠️ Sin acotar a .planner-config: el panel del widget se cuelga de <body>. Y z-index 1100, no
+   los 2000 del compartido: el modal de exportación está en 1200 y no puede quedar tapado. */
+.edt-ss-panel {
+    z-index: 1100;
+}
+
+.edt-ss-search,
+.edt-ss-option {
+    font-size: 11px;
+}
+
+.planner-pages {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 3rem 1.5rem 3rem;
+}
+
+.planner-pages--weekly,
+.planner-pages--quarterly {
+    padding-bottom: 1rem;
+}
+
+/* ── EXPORT MODAL (v2) ── */
+.planner-export-modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Above the fixed toolbar (1003), config backdrop (1004) and dropdown
+       panels (1100) so the export modal is never covered by them. */
+    z-index: 1200;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.15s ease,
+        visibility 0.15s ease;
+    pointer-events: none;
+}
+
+.planner-export-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    /* Sin transición de visibility al abrir, ni aquí ni en sus botones: el focus-trap no enfoca lo aún oculto */
+    transition: opacity 0.15s ease;
+}
+
+.planner-export-modal__content {
+    position: relative;
+    background: var(--pl-bg-15);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.5rem;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.planner-export-modal__close-x {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition:
+        all 0.2s ease,
+        visibility 0s;
+}
+
+.planner-export-modal__close-x:hover {
+    background: var(--color-light-gray-bg);
+    color: var(--color-text-primary);
+}
+
+.planner-export-modal__content h3 {
+    font-family: var(--planner-font-heading);
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+    color: var(--color-text-primary);
+}
+
+.planner-export-modal__content p {
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Individual page download buttons */
+.planner-export-modal__pages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.planner-export-modal__page-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 0.5rem;
+    border: 2px solid var(--color-border);
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+    transition:
+        all 0.2s ease,
+        visibility 0s;
+    color: var(--color-text-primary);
+}
+
+.planner-export-modal__page-btn i {
+    font-size: 1.3rem;
+    color: var(--color-accent);
+}
+
+.planner-export-modal__page-btn span {
+    font-weight: 600;
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.planner-export-modal__page-btn small {
+    font-size: 0.65rem;
+    color: var(--color-text-secondary);
+}
+
+.planner-export-modal__page-btn:hover {
+    background: var(--color-light-gray-bg);
+    border-color: var(--color-accent);
+}
+
+/* Weekly mode: single image btn matches PDF btn layout */
+.planner-export-modal__page-btn:only-child {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    text-align: left;
+}
+
+.planner-export-modal__page-btn:only-child span {
+    font-size: 0.9rem;
+}
+
+.planner-export-modal__page-btn:only-child small {
+    margin-left: auto;
+    font-size: 0.7rem;
+}
+
+.planner-export-modal__divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 0.5rem 0 1rem;
+}
+
+/* PDF full download */
+.planner-export-modal__pdf-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+    transition:
+        all 0.2s ease,
+        visibility 0s;
+    color: var(--color-text-primary);
+    text-align: left;
+}
+
+.planner-export-modal__pdf-btn i {
+    font-size: 1.4rem;
+    color: #e74c3c;
+    min-width: 24px;
+    text-align: center;
+}
+
+.planner-export-modal__pdf-btn span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.planner-export-modal__pdf-btn small {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+}
+
+.planner-export-modal__pdf-btn:hover {
+    background: var(--color-light-gray-bg);
+    border-color: #e74c3c;
+}
+
+.planner-export-modal__pdf-btn + .planner-export-modal__pdf-btn {
+    margin-top: 0.6rem;
+}
+
+@keyframes hour-flash-dark {
+    0% {
+        background: rgba(93, 173, 226, 0.3);
+        border-color: rgba(93, 173, 226, 0.55);
+    }
+    100% {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+}
+
+/* Páginas SIEMPRE fondo claro (papel impreso) */
+.planner-page {
+    background: var(--planner-color-paper) !important;
+    color: var(--planner-color-ink) !important;
+}
+
+/* ── DESIGN PANEL — Theme cards, color swatches, text styles ── */
+
+/* ── Theme cards ── */
+.planner-design__themes {
+    display: grid;
+    /* 3 por fila: a 4 las tarjetas se quedaban en 68 px y el nombre del tema apenas se leía. */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.planner-design__theme-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 8px 6px;
+    border-radius: 8px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* Sin `aspect-ratio`: la tarjeta la marca su contenido (nombre, puntos, tamaños y fuente). */
+}
+
+.planner-design__theme-sizes,
+.planner-design__theme-font {
+    font-size: 9px;
+    line-height: 1.25;
+    opacity: 0.75;
+    text-align: center;
+}
+
+.planner-design__theme-font {
+    font-weight: 600;
+}
+
+.planner-design__theme-card:hover {
+    transform: scale(1.05);
+    border-color: var(--pl-bd-4);
+}
+
+.planner-design__theme-card.is-active {
+    border-color: var(--color-accent, #2570c2);
+    box-shadow: 0 0 0 2px var(--color-accent, #2570c2);
+}
+
+.planner-design__theme-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.planner-design__theme-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.planner-design__theme-dot {
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 50%;
+}
+
+/* ── Hint label ── */
+.planner-design__hint {
+    font-size: 10px;
+    opacity: 0.5;
+    font-weight: 400;
+}
+
+/* ── Color swatches (text color override) ── */
+.planner-design__swatches {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    max-width: 100%;
+}
+
+.planner-design__swatch {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.planner-design__swatch:hover {
+    transform: scale(1.1);
+    border-color: var(--pl-bd-4);
+}
+
+.planner-design__swatch.is-active {
+    border-color: var(--color-accent, #2570c2);
+    box-shadow: 0 0 0 2px var(--color-accent, #2570c2);
+}
+
+.planner-design__swatch.is-active::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free', 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+}
+
+.planner-design__swatch--dark.is-active::after {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.planner-design__swatch--none {
+    background: var(--pl-bg-16);
+    color: var(--pl-tx-19);
+    font-size: 11px;
+}
+
+.planner-design__swatch--none.is-active {
+    background: #f5f5f5;
+}
+
+.planner-design__swatch--toggle {
+    background: transparent;
+    color: #888;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-style: dashed;
+}
+
+.planner-design__swatch--toggle:hover {
+    color: var(--pl-tx-10);
+    background: var(--pl-bg-40);
+}
+
+.planner-design__swatch--toggle.is-active {
+    border-color: var(--color-accent, #2570c2);
+    box-shadow: 0 0 0 2px var(--color-accent, #2570c2);
+    color: var(--color-accent, #2570c2);
+    border-style: solid;
+}
+
+.planner-design__swatch--toggle.is-active::after {
+    content: none;
+}
+
+/* ── Text style: font row (searchable dropdown) ── */
+.planner-design__font-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 8px;
+}
+
+.planner-design__font-dropdown {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ── Text size control ── */
+.planner-design__sizes-row {
+    display: flex;
+    gap: 12px;
+}
+
+.planner-design__size-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.planner-design__size-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--pl-tx-21);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.planner-design__size-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.planner-design__size-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.planner-design__size-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background: transparent;
+    color: var(--pl-tx-20);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.planner-design__size-btn:hover {
+    border-color: var(--pl-bd-4);
+    background: var(--pl-bg-17);
+}
+
+.planner-design__size-input {
+    width: 36px;
+    height: 32px;
+    text-align: center;
+    padding: 3px 2px;
+    border-radius: 7px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background: transparent;
+    color: var(--pl-tx-20);
+    font-size: 13px;
+    font-weight: 600;
+    -moz-appearance: textfield;
+    flex-shrink: 0;
+}
+
+.planner-design__size-input::-webkit-outer-spin-button,
+.planner-design__size-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+/* ── Cell edit mode visual feedback ── */
+.is-cell-editable:hover,
+.is-section-editable:hover {
+    outline: 2px dashed rgba(74, 144, 217, 0.45);
+    outline-offset: -2px;
+    background-color: rgba(74, 144, 217, 0.06);
+}
+
+/* ── Cell mini-editor (weekly text editing) ── */
+.planner-cell-editor {
+    position: fixed;
+    z-index: 10000;
+    background: var(--pl-bg-22);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    box-shadow: var(--pl-sh-4);
+    padding: 10px;
+    width: calc(8 * 24px + 7 * 5px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ── Edición de celdas en móvil: el flotante pasa a bottom-sheet a sangre ── */
+/* ⚠️ El 728 tiene que coincidir con isMobile() de @core/breakpoint/get-bp.ts y con
+   panel-sheet.css: si cambia uno, cambian los tres. */
+@media screen and (max-width: 728px) {
+    /* Con el editor de celda desplegado la bottom bar estorba; por id porque la clase
+       de la barra ya es la compartida .edt-toolbar. */
+    body.planner-cell-editing #plannerToolbar {
+        visibility: hidden;
+    }
+
+    .planner-cell-editor--sheet {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: auto;
+        /* --cell-editor-kb lo escribe el JS desde visualViewport: sin él, en iOS el sheet queda
+           DEBAJO del teclado, porque innerHeight no encoge al abrirlo. */
+        bottom: var(--cell-editor-kb, 0px);
+        width: 100%;
+        max-width: 100%;
+        z-index: 10001;
+        max-height: min(60dvh, calc(var(--cell-editor-vvh, 100dvh) - 96px));
+        border-radius: 16px 16px 0 0;
+        padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+        gap: 10px;
+        overflow: hidden;
+        box-shadow: 0 -12px 32px rgba(13, 27, 42, 0.22);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Reordena sin tocar el DOM: texto arriba, y ✓/✕ al pie donde llega el pulgar. */
+    .planner-cell-editor--sheet > * {
+        order: 2;
+    }
+
+    .planner-cell-editor--sheet > .planner-cell-editor__input {
+        order: 1;
+        flex: 1 1 auto;
+        min-height: 96px;
+        max-height: none;
+        overflow-y: auto;
+        /* 16px NO es cosmético: por debajo, iOS Safari hace zoom al enfocar el campo. */
+        font-size: 16px;
+    }
+
+    .planner-cell-editor--sheet > .planner-cell-editor__function-row {
+        order: 9;
+        flex-shrink: 0;
+    }
+
+    .planner-cell-editor--sheet .planner-cell-editor__fmt-btn {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 15px;
+    }
+
+    .planner-cell-editor--sheet .planner-cell-editor__function-row .planner-cell-editor__fmt-btn--confirm,
+    .planner-cell-editor--sheet .planner-cell-editor__function-row .planner-cell-editor__fmt-btn--cancel {
+        flex: 1;
+    }
+
+    /* Paleta en rejilla de 8: a 360px da una caja táctil de ~38px con el disco pintado a 20px. */
+    .planner-cell-editor--sheet .planner-cell-editor__color-row {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 4px;
+    }
+
+    .planner-cell-editor--sheet .planner-cell-editor__swatch {
+        width: 100%;
+        /* Sin el height: auto, el height: 20px de la regla base manda sobre el aspect-ratio y el disco sale como una raya */
+        height: auto;
+        aspect-ratio: 1;
+        padding: 22%;
+        background-clip: content-box;
+        background-origin: content-box;
+        border: none;
+    }
+}
+
+.planner-cell-editor__function-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.planner-cell-editor__format-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.planner-cell-editor__fmt-btn {
+    width: 28px;
+    height: 28px;
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    color: var(--pl-tx-11);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.planner-cell-editor__fmt-btn:hover {
+    border-color: var(--pl-bd-4);
+    color: var(--pl-tx-10);
+}
+
+.planner-cell-editor__fmt-btn.is-active {
+    border-color: var(--pl-bd-3);
+    background: var(--pl-bg-5);
+    color: var(--pl-tx-5);
+}
+
+.planner-cell-editor__fmt-btn--bold {
+    font-weight: 900;
+}
+
+.planner-cell-editor__fmt-btn--italic {
+    font-style: italic;
+}
+
+.planner-cell-editor__fmt-btn--underline {
+    text-decoration: underline;
+}
+
+.planner-cell-editor__fmt-btn--vacation {
+    color: #e67e22;
+    font-weight: 700;
+}
+
+.planner-cell-editor__fmt-btn--vacation.is-active {
+    background: #e67e22;
+    border-color: #e67e22;
+    color: #fff;
+}
+
+.planner-cell-editor__fmt-btn--vacation.is-disabled {
+    opacity: 0.35;
+}
+
+.planner-cell-editor__fmt-btn--holiday-hide {
+    color: #8e44ad;
+    font-weight: 700;
+    border-color: rgba(142, 68, 173, 0.4);
+}
+
+.planner-cell-editor__fmt-btn--holiday-hide.is-active {
+    background: rgba(142, 68, 173, 0.15);
+    border-color: #7b2d8e;
+    color: #7b2d8e;
+}
+
+.planner-cell-editor__fmt-btn--holiday-hide.is-disabled {
+    opacity: 0.35;
+}
+
+.planner-cell-editor__fmt-btn--bg-color {
+    color: #546e7a;
+    border-color: rgba(84, 110, 122, 0.4);
+}
+
+.planner-cell-editor__fmt-btn--bg-color.is-active {
+    background: rgba(74, 144, 217, 0.15);
+    border-color: #4a90d9;
+    color: #4a90d9;
+}
+
+.planner-cell-editor__fmt-btn--confirm {
+    font-size: 14px;
+    color: #888;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.planner-cell-editor__fmt-btn--confirm:not(.is-disabled) {
+    color: var(--pl-tx-26);
+    background: var(--pl-bg-25);
+    border-color: var(--pl-bd-14);
+    font-weight: 600;
+}
+
+.planner-cell-editor__fmt-btn--confirm:not(.is-disabled):hover {
+    background: var(--pl-bg-26);
+    border-color: var(--pl-bd-15);
+}
+
+.planner-cell-editor__fmt-btn--reset {
+    color: var(--pl-tx-24);
+    font-size: 14px;
+}
+
+.planner-cell-editor__fmt-btn--reset:hover {
+    border-color: var(--pl-bd-13);
+    background: var(--pl-bg-24);
+    color: var(--pl-tx-25);
+}
+
+.planner-cell-editor__fmt-btn--delete {
+    color: var(--pl-tx-12);
+    font-size: 13px;
+    border-color: var(--pl-bd-8);
+}
+
+.planner-cell-editor__fmt-btn--delete:hover {
+    background: var(--pl-bg-27);
+    border-color: var(--pl-bd-16);
+    color: var(--pl-tx-27);
+}
+
+.planner-cell-editor__fmt-btn--cancel {
+    background: rgba(231, 76, 60, 0.1);
+    border-color: rgba(231, 76, 60, 0.2);
+    color: #c0392b;
+    font-size: 13px;
+}
+
+.planner-cell-editor__fmt-btn--cancel:hover {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: rgba(231, 76, 60, 0.35);
+    color: #e74c3c;
+}
+
+.planner-cell-editor__fmt-btn.is-disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.planner-cell-editor__fmt-btn.is-disabled::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--pl-bg-23);
+    pointer-events: none;
+}
+
+.planner-cell-editor__swatch--no-color {
+    background: var(--planner-color-paper, #fff);
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.planner-cell-editor__swatch--no-color::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 2px;
+    background: #c0392b;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    pointer-events: none;
+}
+
+/* BG mode: dim toolbar except swatches + confirm/cancel when active */
+.planner-cell-editor__fmt-btn.is-bg-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.planner-cell-editor__input.is-bg-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+}
+
+.planner-cell-editor.is-bg-mode {
+    outline: 2px solid rgba(74, 144, 217, 0.4);
+    outline-offset: -2px;
+}
+
+/* BG mode: confirm gets blue tint instead of green */
+.planner-cell-editor.is-bg-mode .planner-cell-editor__fmt-btn--confirm:not(.is-bg-disabled) {
+    color: #1976d2;
+    background: rgba(25, 118, 210, 0.1);
+    border-color: rgba(25, 118, 210, 0.25);
+}
+
+.planner-cell-editor.is-bg-mode .planner-cell-editor__fmt-btn--confirm:not(.is-bg-disabled):hover {
+    background: rgba(25, 118, 210, 0.2);
+    border-color: rgba(25, 118, 210, 0.4);
+}
+
+/* BG mode: cancel gets blue-red tint */
+.planner-cell-editor.is-bg-mode .planner-cell-editor__fmt-btn--cancel:not(.is-bg-disabled) {
+    color: #546e7a;
+    background: rgba(84, 110, 122, 0.08);
+    border-color: rgba(84, 110, 122, 0.25);
+}
+
+.planner-cell-editor.is-bg-mode .planner-cell-editor__fmt-btn--cancel:not(.is-bg-disabled):hover {
+    background: rgba(84, 110, 122, 0.15);
+    border-color: rgba(84, 110, 122, 0.4);
+}
+
+/* BG mode: delete button for removing bg color */
+.planner-cell-editor.is-bg-mode .planner-cell-editor__fmt-btn--delete:not(.is-bg-disabled) {
+    color: #c0392b;
+    border-color: rgba(231, 76, 60, 0.2);
+}
+
+.planner-cell-editor.is-bg-mode .planner-cell-editor__fmt-btn--delete:not(.is-bg-disabled):hover {
+    background: rgba(231, 76, 60, 0.15);
+    border-color: rgba(231, 76, 60, 0.35);
+}
+
+.planner-cell-editor__input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.planner-cell-editor__input {
+    padding: 6px 8px;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    font-family: inherit;
+    outline: none;
+    max-height: calc(10 * 1.4 * 12px);
+    min-height: calc(3 * 1.4 * 12px);
+    align-self: stretch;
+    overflow-y: auto;
+    resize: vertical;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+
+.planner-cell-editor__input:empty::before {
+    content: attr(data-placeholder);
+    color: var(--pl-tx-23);
+    pointer-events: none;
+}
+
+.planner-cell-editor__input:focus {
+    border-color: #4a90d9;
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+}
+
+.planner-cell-editor__input ul,
+.planner-cell-editor__input ol {
+    margin: 2px 0;
+    padding-left: 18px;
+}
+.planner-cell-editor__input li {
+    margin: 0;
+}
+
+.planner-cell-editor__bold-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    background: transparent;
+    font-weight: 900;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--pl-tx-30);
+    transition: all 0.15s ease;
+}
+
+.planner-cell-editor__bold-btn.is-active {
+    background: var(--pl-bg-12);
+    color: var(--pl-tx-5);
+    border-color: var(--pl-bd-7);
+}
+
+.planner-cell-editor__color-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-self: stretch;
+}
+
+.planner-cell-editor__swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.1s ease;
+}
+
+.planner-cell-editor__swatch:hover {
+    transform: scale(1.2);
+}
+
+.planner-cell-editor__swatch.is-active {
+    border-color: var(--pl-bd-7);
+    box-shadow: var(--pl-sh-2);
+}
+
+.planner-cell-editor__swatch--accent {
+    position: relative;
+    border: 2px solid rgba(0, 0, 0, 0.25);
+}
+
+.planner-cell-editor__swatch--accent::after {
+    content: '\f1fc';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 9px;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+}
+
+.planner-cell-editor__swatch--accent.is-active {
+    border-style: solid;
+    border-color: #333;
+    box-shadow:
+        0 0 0 1px #fff,
+        0 0 0 3px #333;
+}
+
+.planner-cell-editor__swatch--white {
+    border: 1px solid #ccc;
+}
+
+.planner-cell-editor__swatch.is-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+/* El hueco libre es un <input type="color"> en forma de disco: sin color elegido enseña el arcoíris y, con él, su muestra.
+   Los pseudo de WebKit y de Firefox van en reglas separadas: uno que el navegador no conoce tira la regla entera */
+.planner-cell-editor__swatch--custom {
+    -webkit-appearance: none;
+    appearance: none;
+    background: conic-gradient(#e53935, #fdd835, #43a047, #00acc1, #1e88e5, #8e24aa, #e53935);
+    overflow: hidden;
+}
+
+.planner-cell-editor__swatch--custom::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.planner-cell-editor__swatch--custom::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.planner-cell-editor__swatch--custom::-moz-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.planner-cell-editor__swatch--custom:not([data-color-value])::-webkit-color-swatch {
+    opacity: 0;
+}
+
+.planner-cell-editor__swatch--custom:not([data-color-value])::-moz-color-swatch {
+    opacity: 0;
+}
+
+.planner-cell-editor__actions {
+    display: flex;
+    gap: 6px;
+}
+
+.planner-cell-editor__btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.planner-cell-editor__btn--apply {
+    background: rgba(39, 174, 96, 0.1);
+    border-color: rgba(39, 174, 96, 0.2);
+    color: var(--pl-tx-13);
+}
+
+.planner-cell-editor__btn--apply:hover {
+    background: rgba(39, 174, 96, 0.2);
+    border-color: rgba(39, 174, 96, 0.35);
+}
+
+.planner-cell-editor__btn--clear {
+    background: rgba(231, 76, 60, 0.1);
+    border-color: rgba(231, 76, 60, 0.2);
+    color: var(--pl-tx-12);
+}
+
+.planner-cell-editor__btn--clear:hover {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: rgba(231, 76, 60, 0.35);
+}
+
+/* Screen-reader only utility — usada por el live region del modo crosshair */
+.planner-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ── QR WATERMARK ── */
+/* Marca de agua QR — solo si está encendida en app.config.ts */
+
+.planner-qr-watermark {
+    position: absolute;
+    opacity: 0.3;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    z-index: 1;
+    display: block;
+}
+
+/* Posiciones */
+.planner-qr-watermark--bottom-right {
+    bottom: 3px;
+    right: 3px;
+}
+
+.planner-qr-watermark--bottom-left {
+    bottom: 3px;
+    left: 3px;
+}
+
+.planner-qr-watermark--top-right {
+    top: 2mm;
+    right: 2mm;
+}
+
+/* top-left: usado cuando el título está a la derecha (H1) */
+.planner-qr-watermark--top-left {
+    top: 2mm;
+    left: 2mm;
+}
+
+.planner-qr-watermark--top-center {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Tamaños */
+.planner-qr-watermark--a5 {
+    width: 22mm;
+    height: 22mm;
+    object-fit: contain;
+}
+
+.planner-qr-watermark--quarterly {
+    position: absolute;
+    width: 24mm;
+    height: 24mm;
+    object-fit: contain;
+    bottom: 1mm;
+    right: 1mm;
+    opacity: 0.3;
+}
+
+.planner-qr-watermark--notes {
+    position: static;
+    opacity: 0.3;
+}
+
+/* Semanal: tamaño constante e independiente de la tabla */
+.planner-qr-watermark--weekly-fixed {
+    position: absolute;
+    width: 24mm;
+    height: 24mm;
+    object-fit: contain;
+    z-index: 5;
+    pointer-events: none;
+    bottom: 7mm;
+    right: 9mm;
+}
+
+/* Celda weekly con QR (legacy) */
+.pw-table__cell--qr {
+    padding: 0 !important;
+    position: relative;
+}
+
+/* Cell center — H3: centrado H y V en el último cuadro del grid */
+.planner-qr-watermark--cell-center {
+    top: 50%;
+    left: 50%;
+    bottom: auto;
+    right: auto;
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+}
+
+/* Bottom center — H1: borde inferior del QR al borde del contenedor, centrado H */
+.planner-qr-watermark--bottom-center {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Imposed — when text overlaps the QR, boost opacity so QR dominates */
+.planner-qr-watermark--imposed {
+    opacity: 0.85;
+}
+
+@media print {
+    .planner-qr-watermark {
+        opacity: 0.3 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .planner-qr-watermark--imposed {
+        opacity: 0.85 !important;
+    }
+    .planner-qr-watermark--quarterly,
+    .planner-qr-watermark--notes {
+        opacity: 0.3 !important;
+    }
+}
+
+/* ── Tokens del chrome: la regla vive UNA vez arriba con var(); aqui solo los valores por tema ── */
+
+:root {
+    --pl-bd-1: rgba(0, 0, 0, 0.24);
+    --pl-bd-13: rgba(126, 87, 194, 0.35);
+    --pl-bd-14: rgba(39, 174, 96, 0.2);
+    --pl-bd-15: rgba(39, 174, 96, 0.35);
+    --pl-bd-16: rgba(231, 76, 60, 0.35);
+    --pl-bd-17: rgba(0, 0, 0, 0.3);
+    --pl-bd-18: rgba(74, 144, 217, 0.2);
+    --pl-bd-19: rgba(74, 144, 217, 0.35);
+    --pl-bd-2: #111;
+    --pl-bd-20: rgba(120, 120, 120, 0.25);
+    --pl-bd-21: rgba(231, 76, 60, 0.5);
+    --pl-bd-22: rgba(243, 156, 18, 0.35);
+    --pl-bd-23: rgba(243, 156, 18, 0.5);
+    --pl-bd-24: rgba(231, 76, 60, 0.35);
+    --pl-bd-25: rgba(74, 144, 217, 0.4);
+    --pl-bd-3: #555;
+    --pl-bd-4: rgba(0, 0, 0, 0.3);
+    --pl-bd-5: rgba(74, 144, 217, 0.35);
+    --pl-bd-6: rgba(74, 144, 217, 0.3);
+    --pl-bd-7: #333;
+    --pl-bd-8: rgba(231, 76, 60, 0.2);
+    --pl-bg-1: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 249, 252, 0.9));
+    --pl-bg-10: #f5f5f5;
+    --pl-bg-11: #f0f0f0;
+    --pl-bg-12: #333;
+    --pl-bg-13: rgba(231, 76, 60, 0.08);
+    --pl-bg-14: #fff;
+    --pl-bg-15: var(--color-background);
+    --pl-bg-16: #f5f5f5;
+    --pl-bg-17: rgba(0, 0, 0, 0.03);
+    --pl-bg-2: rgba(0, 0, 0, 0.1);
+    --pl-bg-22: #fff;
+    --pl-bg-23: linear-gradient(
+        to top right,
+        transparent calc(50% - 1px),
+        rgba(0, 0, 0, 0.15) calc(50% - 1px),
+        rgba(0, 0, 0, 0.15) calc(50% + 1px),
+        transparent calc(50% + 1px)
+    );
+    --pl-bg-24: rgba(126, 87, 194, 0.1);
+    --pl-bg-25: rgba(39, 174, 96, 0.1);
+    --pl-bg-26: rgba(39, 174, 96, 0.2);
+    --pl-bg-27: rgba(231, 76, 60, 0.15);
+    --pl-bg-28: rgba(0, 0, 0, 0.15);
+    --pl-bg-29: rgba(0, 0, 0, 0.28);
+    --pl-bg-3: #fff;
+    --pl-bg-30: rgba(74, 144, 217, 0.1);
+    --pl-bg-31: rgba(74, 144, 217, 0.2);
+    --pl-bg-32: rgba(120, 120, 120, 0.08);
+    --pl-bg-33: rgba(243, 156, 18, 0.12);
+    --pl-bg-34: rgba(74, 144, 217, 0.12);
+    --pl-bg-35: rgba(74, 144, 217, 0.18);
+    --pl-bg-36: rgba(231, 76, 60, 0.22);
+    --pl-bg-37: rgba(243, 156, 18, 0.22);
+    --pl-bg-38: rgba(231, 76, 60, 0.06);
+    --pl-bg-39: rgba(74, 144, 217, 0.1);
+    --pl-bg-4: #111;
+    --pl-bg-40: rgba(0, 0, 0, 0.04);
+    --pl-bg-5: #555;
+    --pl-bg-6: rgba(0, 0, 0, 0.15);
+    --pl-bg-7: rgba(231, 76, 60, 0.1);
+    --pl-bg-8: rgba(74, 144, 217, 0.12);
+    --pl-bg-9: rgba(74, 144, 217, 0.1);
+    --pl-sh-1: 0 18px 44px rgba(13, 27, 42, 0.2);
+    --pl-sh-2: 0 0 0 1px #fff, 0 0 0 3px #333;
+    --pl-sh-4: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --pl-tx-1: #333;
+    --pl-tx-10: #333;
+    --pl-tx-11: #7f8c8d;
+    --pl-tx-12: #c0392b;
+    --pl-tx-13: #27ae60;
+    --pl-tx-14: #2980b9;
+    --pl-tx-15: #aaa;
+    --pl-tx-16: #555;
+    --pl-tx-17: #999;
+    --pl-tx-18: #d68910;
+    --pl-tx-19: #bbb;
+    --pl-tx-2: #555;
+    --pl-tx-20: var(--planner-color-ink, #3d3a34);
+    --pl-tx-21: #777;
+    --pl-tx-23: rgba(0, 0, 0, 0.35);
+    --pl-tx-24: #7f8c8d;
+    --pl-tx-25: #7e57c2;
+    --pl-tx-26: #27ae60;
+    --pl-tx-27: #e74c3c;
+    --pl-tx-28: #4a90d9;
+    --pl-tx-29: #4a90d9;
+    --pl-tx-3: #111;
+    --pl-tx-30: #888;
+    --pl-tx-4: #444;
+    --pl-tx-5: #fff;
+    --pl-tx-6: #555;
+    --pl-tx-7: inherit;
+    --pl-tx-8: #666;
+    --pl-tx-9: #888;
+    --pl-x-1: rgba(0, 0, 0, 0.15) transparent;
+    --pl-x-2: hour-flash 0.5s ease-out forwards;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.force-light) {
+        --pl-bd-1: rgba(255, 255, 255, 0.34);
+        --pl-bd-13: rgba(179, 157, 219, 0.4);
+        --pl-bd-14: #219a52;
+        --pl-bd-15: #27ae60;
+        --pl-bd-16: rgba(231, 76, 60, 0.5);
+        --pl-bd-17: rgba(255, 255, 255, 0.34);
+        --pl-bd-18: rgba(93, 173, 226, 0.25);
+        --pl-bd-19: rgba(93, 173, 226, 0.5);
+        --pl-bd-2: #f3f3f3;
+        --pl-bd-20: rgba(255, 255, 255, 0.15);
+        --pl-bd-21: rgba(231, 76, 60, 0.4);
+        --pl-bd-22: rgba(243, 156, 18, 0.25);
+        --pl-bd-23: rgba(243, 156, 18, 0.4);
+        --pl-bd-24: rgba(231, 76, 60, 0.4);
+        --pl-bd-25: rgba(93, 173, 226, 0.4);
+        --pl-bd-3: #e0e0e0;
+        --pl-bd-4: rgba(255, 255, 255, 0.35);
+        --pl-bd-5: rgba(93, 173, 226, 0.4);
+        --pl-bd-6: rgba(93, 173, 226, 0.3);
+        --pl-bd-7: #e0e0e0;
+        --pl-bd-8: rgba(231, 76, 60, 0.25);
+        --pl-bg-1: linear-gradient(180deg, rgba(22, 24, 32, 0.96), rgba(16, 18, 24, 0.9));
+        --pl-bg-10: rgba(255, 255, 255, 0.08);
+        --pl-bg-11: rgba(255, 255, 255, 0.12);
+        --pl-bg-12: #e0e0e0;
+        --pl-bg-13: rgba(231, 76, 60, 0.12);
+        --pl-bg-14: rgba(255, 255, 255, 0.04);
+        --pl-bg-15: #1a1a1a;
+        --pl-bg-16: rgba(255, 255, 255, 0.06);
+        --pl-bg-17: rgba(255, 255, 255, 0.06);
+        --pl-bg-2: rgba(255, 255, 255, 0.1);
+        --pl-bg-22: rgba(30, 32, 40, 0.96);
+        --pl-bg-23: linear-gradient(
+            to top right,
+            transparent calc(50% - 1px),
+            rgba(255, 255, 255, 0.15) calc(50% - 1px),
+            rgba(255, 255, 255, 0.15) calc(50% + 1px),
+            transparent calc(50% + 1px)
+        );
+        --pl-bg-24: rgba(126, 87, 194, 0.15);
+        --pl-bg-25: #27ae60;
+        --pl-bg-26: #2ecc71;
+        --pl-bg-27: rgba(231, 76, 60, 0.3);
+        --pl-bg-28: rgba(255, 255, 255, 0.18);
+        --pl-bg-29: rgba(255, 255, 255, 0.32);
+        --pl-bg-3: rgba(255, 255, 255, 0.06);
+        --pl-bg-30: rgba(93, 173, 226, 0.15);
+        --pl-bg-31: rgba(93, 173, 226, 0.3);
+        --pl-bg-32: rgba(255, 255, 255, 0.06);
+        --pl-bg-33: rgba(243, 156, 18, 0.15);
+        --pl-bg-34: rgba(74, 144, 217, 0.15);
+        --pl-bg-35: rgba(74, 144, 217, 0.22);
+        --pl-bg-36: rgba(231, 76, 60, 0.25);
+        --pl-bg-37: rgba(243, 156, 18, 0.25);
+        --pl-bg-38: rgba(231, 76, 60, 0.1);
+        --pl-bg-39: rgba(93, 173, 226, 0.1);
+        --pl-bg-4: #f3f3f3;
+        --pl-bg-40: rgba(255, 255, 255, 0.06);
+        --pl-bg-5: #e0e0e0;
+        --pl-bg-6: rgba(255, 255, 255, 0.15);
+        --pl-bg-7: rgba(231, 76, 60, 0.15);
+        --pl-bg-8: rgba(93, 173, 226, 0.15);
+        --pl-bg-9: rgba(93, 173, 226, 0.12);
+        --pl-sh-1: 0 18px 44px rgba(0, 0, 0, 0.4);
+        --pl-sh-2: 0 0 0 1px #333, 0 0 0 3px #e0e0e0;
+        --pl-sh-4: 0 8px 24px rgba(0, 0, 0, 0.4);
+        --pl-tx-1: #f0f0f0;
+        --pl-tx-10: #cfcfcf;
+        --pl-tx-11: #95a5a6;
+        --pl-tx-12: #e74c3c;
+        --pl-tx-13: #2ecc71;
+        --pl-tx-14: #5dade2;
+        --pl-tx-15: #777;
+        --pl-tx-16: #999;
+        --pl-tx-17: #777;
+        --pl-tx-18: #f39c12;
+        --pl-tx-19: #666;
+        --pl-tx-2: #777;
+        --pl-tx-20: #cfcfcf;
+        --pl-tx-21: #999;
+        --pl-tx-23: rgba(255, 255, 255, 0.3);
+        --pl-tx-24: #90a4ae;
+        --pl-tx-25: #b39ddb;
+        --pl-tx-26: #fff;
+        --pl-tx-27: #ef5350;
+        --pl-tx-28: #6db3f8;
+        --pl-tx-29: #5dade2;
+        --pl-tx-3: #f0f0f0;
+        --pl-tx-30: #777;
+        --pl-tx-4: #cfcfcf;
+        --pl-tx-5: #111;
+        --pl-tx-6: #cfcfcf;
+        --pl-tx-7: #cfcfcf;
+        --pl-tx-8: #999;
+        --pl-tx-9: #999;
+        --pl-x-1: rgba(255, 255, 255, 0.18) transparent;
+        --pl-x-2: hour-flash-dark 0.5s ease-out forwards;
+    }
+}
+
+.dark-mode {
+    --pl-bd-1: rgba(255, 255, 255, 0.34);
+    --pl-bd-13: rgba(179, 157, 219, 0.4);
+    --pl-bd-14: #219a52;
+    --pl-bd-15: #27ae60;
+    --pl-bd-16: rgba(231, 76, 60, 0.5);
+    --pl-bd-17: rgba(255, 255, 255, 0.34);
+    --pl-bd-18: rgba(93, 173, 226, 0.25);
+    --pl-bd-19: rgba(93, 173, 226, 0.5);
+    --pl-bd-2: #f3f3f3;
+    --pl-bd-20: rgba(255, 255, 255, 0.15);
+    --pl-bd-21: rgba(231, 76, 60, 0.4);
+    --pl-bd-22: rgba(243, 156, 18, 0.25);
+    --pl-bd-23: rgba(243, 156, 18, 0.4);
+    --pl-bd-24: rgba(231, 76, 60, 0.4);
+    --pl-bd-25: rgba(93, 173, 226, 0.4);
+    --pl-bd-3: #e0e0e0;
+    --pl-bd-4: rgba(255, 255, 255, 0.35);
+    --pl-bd-5: rgba(93, 173, 226, 0.4);
+    --pl-bd-6: rgba(93, 173, 226, 0.3);
+    --pl-bd-7: #e0e0e0;
+    --pl-bd-8: rgba(231, 76, 60, 0.25);
+    --pl-bg-1: linear-gradient(180deg, rgba(22, 24, 32, 0.96), rgba(16, 18, 24, 0.9));
+    --pl-bg-10: rgba(255, 255, 255, 0.08);
+    --pl-bg-11: rgba(255, 255, 255, 0.12);
+    --pl-bg-12: #e0e0e0;
+    --pl-bg-13: rgba(231, 76, 60, 0.12);
+    --pl-bg-14: rgba(255, 255, 255, 0.04);
+    --pl-bg-15: #1a1a1a;
+    --pl-bg-16: rgba(255, 255, 255, 0.06);
+    --pl-bg-17: rgba(255, 255, 255, 0.06);
+    --pl-bg-2: rgba(255, 255, 255, 0.1);
+    --pl-bg-22: rgba(30, 32, 40, 0.96);
+    --pl-bg-23: linear-gradient(
+        to top right,
+        transparent calc(50% - 1px),
+        rgba(255, 255, 255, 0.15) calc(50% - 1px),
+        rgba(255, 255, 255, 0.15) calc(50% + 1px),
+        transparent calc(50% + 1px)
+    );
+    --pl-bg-24: rgba(126, 87, 194, 0.15);
+    --pl-bg-25: #27ae60;
+    --pl-bg-26: #2ecc71;
+    --pl-bg-27: rgba(231, 76, 60, 0.3);
+    --pl-bg-28: rgba(255, 255, 255, 0.18);
+    --pl-bg-29: rgba(255, 255, 255, 0.32);
+    --pl-bg-3: rgba(255, 255, 255, 0.06);
+    --pl-bg-30: rgba(93, 173, 226, 0.15);
+    --pl-bg-31: rgba(93, 173, 226, 0.3);
+    --pl-bg-32: rgba(255, 255, 255, 0.06);
+    --pl-bg-33: rgba(243, 156, 18, 0.15);
+    --pl-bg-34: rgba(74, 144, 217, 0.15);
+    --pl-bg-35: rgba(74, 144, 217, 0.22);
+    --pl-bg-36: rgba(231, 76, 60, 0.25);
+    --pl-bg-37: rgba(243, 156, 18, 0.25);
+    --pl-bg-38: rgba(231, 76, 60, 0.1);
+    --pl-bg-39: rgba(93, 173, 226, 0.1);
+    --pl-bg-4: #f3f3f3;
+    --pl-bg-40: rgba(255, 255, 255, 0.06);
+    --pl-bg-5: #e0e0e0;
+    --pl-bg-6: rgba(255, 255, 255, 0.15);
+    --pl-bg-7: rgba(231, 76, 60, 0.15);
+    --pl-bg-8: rgba(93, 173, 226, 0.15);
+    --pl-bg-9: rgba(93, 173, 226, 0.12);
+    --pl-sh-1: 0 18px 44px rgba(0, 0, 0, 0.4);
+    --pl-sh-2: 0 0 0 1px #333, 0 0 0 3px #e0e0e0;
+    --pl-sh-4: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --pl-tx-1: #f0f0f0;
+    --pl-tx-10: #cfcfcf;
+    --pl-tx-11: #95a5a6;
+    --pl-tx-12: #e74c3c;
+    --pl-tx-13: #2ecc71;
+    --pl-tx-14: #5dade2;
+    --pl-tx-15: #777;
+    --pl-tx-16: #999;
+    --pl-tx-17: #777;
+    --pl-tx-18: #f39c12;
+    --pl-tx-19: #666;
+    --pl-tx-2: #777;
+    --pl-tx-20: #cfcfcf;
+    --pl-tx-21: #999;
+    --pl-tx-23: rgba(255, 255, 255, 0.3);
+    --pl-tx-24: #90a4ae;
+    --pl-tx-25: #b39ddb;
+    --pl-tx-26: #fff;
+    --pl-tx-27: #ef5350;
+    --pl-tx-28: #6db3f8;
+    --pl-tx-29: #5dade2;
+    --pl-tx-3: #f0f0f0;
+    --pl-tx-30: #777;
+    --pl-tx-4: #cfcfcf;
+    --pl-tx-5: #111;
+    --pl-tx-6: #cfcfcf;
+    --pl-tx-7: #cfcfcf;
+    --pl-tx-8: #999;
+    --pl-tx-9: #999;
+    --pl-x-1: rgba(255, 255, 255, 0.18) transparent;
+    --pl-x-2: hour-flash-dark 0.5s ease-out forwards;
+}
+
+/* Overrides oscuros sin gemelo claro (la base la pone el propio elemento) */
+
+@media (prefers-color-scheme: dark) {
+    html:not(.force-light) .is-cell-editable:hover,
+    .dark-mode .is-section-editable:hover {
+        outline-color: rgba(93, 173, 226, 0.5);
+        background-color: rgba(93, 173, 226, 0.08);
+    }
+
+    html:not(.force-light) .planner-cell-editor {
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    html:not(.force-light) .planner-cell-editor__bold-btn {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-cell-editor__btn {
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    html:not(.force-light) .planner-cell-editor__fmt-btn {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    html:not(.force-light) .planner-cell-editor__fmt-btn--confirm.is-disabled {
+        color: #666;
+        background: transparent;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    html:not(.force-light) .planner-cell-editor__fmt-btn--delete {
+        background: rgba(231, 76, 60, 0.15);
+    }
+
+    html:not(.force-light) .planner-cell-editor__format-row {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    html:not(.force-light) .planner-cell-editor__input {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.16);
+        color: #cfcfcf;
+    }
+
+    html:not(.force-light) .planner-cell-editor__swatch--accent {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    html:not(.force-light) .planner-cell-editor__swatch--black {
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+
+    html:not(.force-light) .planner-config {
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    html:not(.force-light) .planner-config__accent-swatch--none {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    html:not(.force-light) .planner-config__action-btn--reset {
+        background: rgba(149, 165, 166, 0.1);
+        color: #95a5a6;
+    }
+
+    html:not(.force-light) .planner-config__bold-btn {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-config__clear-btn {
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    html:not(.force-light) .planner-config__eye-btn {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    html:not(.force-light) .planner-config__hour-input {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-config__info-btn {
+        border-color: rgba(93, 173, 226, 0.2);
+    }
+
+    html:not(.force-light) .planner-config__nav-btn {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-config__num-btn {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-config__num-input {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-config__num-reset {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    html:not(.force-light) .planner-config__num-value {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-config__pill {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-config__reset-btn {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    html:not(.force-light) .planner-config__toggle-btn {
+        border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    html:not(.force-light) .planner-design__size-btn {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    html:not(.force-light) .planner-design__size-input {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    html:not(.force-light) .planner-design__swatch {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    html:not(.force-light) .planner-design__theme-card {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+}
+
+.dark-mode .is-cell-editable:hover,
+.dark-mode .is-section-editable:hover {
+    outline-color: rgba(93, 173, 226, 0.5);
+    background-color: rgba(93, 173, 226, 0.08);
+}
+
+.dark-mode .planner-cell-editor {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .planner-cell-editor__bold-btn {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-cell-editor__btn {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .planner-cell-editor__fmt-btn {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .planner-cell-editor__fmt-btn--confirm.is-disabled {
+    color: #666;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .planner-cell-editor__fmt-btn--delete {
+    background: rgba(231, 76, 60, 0.15);
+}
+
+.dark-mode .planner-cell-editor__format-row {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .planner-cell-editor__input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #cfcfcf;
+}
+
+.dark-mode .planner-cell-editor__swatch--accent {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode .planner-cell-editor__swatch--black {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .planner-config {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .planner-config__accent-swatch--none {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .planner-config__action-btn--reset {
+    background: rgba(149, 165, 166, 0.1);
+    color: #95a5a6;
+}
+
+.dark-mode .planner-config__bold-btn {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-config__clear-btn {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .planner-config__eye-btn {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .planner-config__hour-input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-config__info-btn {
+    border-color: rgba(93, 173, 226, 0.2);
+}
+
+.dark-mode .planner-config__nav-btn {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-config__num-btn {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-config__num-input {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-config__num-reset {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .planner-config__num-value {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-config__pill {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-config__reset-btn {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .planner-config__toggle-btn {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .planner-design__size-btn {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .planner-design__size-input {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .planner-design__swatch {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .planner-design__theme-card {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Restos del cascade: estas tres etiquetas tenían su oscuro en una regla tardía que el
+   tokenizado dejó atrás; se fijan aquí con su valor de siempre. */
+@media (prefers-color-scheme: dark) {
+    html:not(.force-light) .planner-config__section-label,
+    html:not(.force-light) .planner-design__hint,
+    html:not(.force-light) .planner-config__section-label--inline {
+        color: #777;
+    }
+}
+
+.dark-mode .planner-config__section-label,
+.dark-mode .planner-design__hint,
+.dark-mode .planner-config__section-label--inline {
+    color: #777;
+}
+
+/* ── Vista, periodo e interruptores dentro de las secciones compartidas ── */
+
+/* Las 4 vistas, en 2×2: cuatro en fila dejan el rótulo ilegible en un panel de 320 px. */
+.planner-config__views {
+    display: grid;
+    /* minmax(0,1fr): con `1fr` a secas el mínimo es el ancho de la palabra y «Trimestral» en
+       alemán desborda el panel, que lo recorta sin scroll ni aviso. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.planner-config__view {
+    display: flex;
+    align-items: center;
+    /* Ajustado al rótulo más largo («Trimestre»): con 10px de lado y 8 de hueco se cortaba. */
+    gap: 6px;
+    padding: 9px 8px;
+    border: 1px solid var(--edt-btn-border);
+    border-radius: var(--edt-btn-radius, 10px);
+    background: var(--edt-btn-bg);
+    color: var(--edt-btn-text);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.planner-config__view:hover {
+    border-color: var(--edt-btn-border-hover);
+}
+
+.planner-config__view.is-active {
+    background: var(--edt-btn-solid-bg);
+    border-color: var(--edt-btn-solid-bg);
+    color: var(--edt-btn-solid-text);
+}
+
+.planner-config__view i {
+    flex: 0 0 14px;
+    text-align: center;
+}
+
+.planner-config__view span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* El periodo tiene su propia sección plegable debajo de Vista (como «Días» del semanal):
+   rótulo arriba a tamaño legible y las dos flechas debajo, a media anchura cada una. */
+.planner-config__period {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.planner-config__period .planner-config__month-label {
+    /* En el DOM el rótulo va entre las dos flechas (orden de lectura y de tabulación); `order`
+       lo sube a su propia fila para que las flechas queden juntas debajo. */
+    order: -1;
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    color: var(--pl-tx-1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.planner-config__period .planner-config__nav-btn {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--edt-btn-border);
+    border-radius: var(--edt-btn-radius, 10px);
+    background: var(--edt-btn-bg);
+    color: var(--edt-btn-text);
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.planner-config__period .planner-config__nav-btn:hover {
+    border-color: var(--edt-btn-border-hover);
+    background: var(--edt-btn-solid-bg);
+    color: var(--edt-btn-solid-text);
+}
+
+.planner-config__toggles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.planner-config__toggles--content {
+    margin-top: 6px;
+}
+
+.planner-config__toggles .planner-config__action-btn,
+.planner-config__toggles .edt-action {
+    width: 100%;
+    min-width: 0;
+}
+
+/* La piel de las secciones la pone el widget; aquí solo el ancho de sus controles. */
+.edt-section .planner-config__selectors,
+.edt-section .planner-config__pills,
+.edt-section .planner-config__hours {
+    margin-top: 0;
+}
+
+/* Tamaño pesa más que Negrita: a mitades el número se quedaba en 18 px. */
+.planner-config__grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 10px;
+}
+
+.planner-config__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.planner-config__field--full {
+    margin-top: 10px;
+}
+
+.planner-config__field > label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pl-tx-2, #757575);
+    letter-spacing: 0.2px;
+}
+
+/* El número a la IZQUIERDA y los dos botones juntos a la derecha; en el
+   DOM el input va primero, así que basta con no invertir nada. */
+.planner-config__field .planner-config__num-controls {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+}
+
+.planner-config__field .planner-config__num-controls {
+    gap: 5px;
+}
+
+.planner-config__field .planner-config__num-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    height: 32px;
+    padding: 0 6px;
+    border: 1px solid var(--edt-btn-border);
+    border-radius: 8px;
+    /* Los colores son los del propio panel (`--pl-*`): fijar #fff aquí dejaba el número
+       invisible en modo oscuro. */
+    background: var(--pl-bg-14);
+    color: var(--pl-tx-10);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.planner-config__field .planner-config__num-btn {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--edt-btn-border);
+    border-radius: 7px;
+    background: transparent;
+    font-size: 13px;
+}
+
+.planner-config__field .planner-config__bold-btn {
+    width: 100%;
+    height: 32px;
+}
+
+.planner-config__field .planner-config__bold-btn {
+    width: 100%;
+}
+
+.planner-config__field .planner-design__font-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.planner-config__field .planner-design__font-select {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Cerrar ≠ Cancelar: en Temas, Guardados y «Más» no hay borrador que descartar —lo que se toca
+   se aplica al momento—, así que su botón es neutro. El rojo queda para los paneles que sí
+   revierten al cerrarse (Config, Diseño, Textos). */
+.planner-config__close {
+    background: var(--edt-btn-bg);
+    color: var(--edt-btn-text);
+    border: 2px solid var(--edt-btn-border);
+}
+
+.planner-config__close:not(:disabled):hover {
+    border-color: var(--edt-btn-border-hover);
+    background: var(--edt-btn-solid-bg);
+    color: var(--edt-btn-solid-text);
+}
+
+/* Ficha del tema activo: qué tipografía y qué tamaños trae. Solo informa. */
+.planner-design__theme-info {
+    margin: 10px 0 0;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: var(--pl-tx-2, #757575);
+}

@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      e2e:
+        description: 'Run the end-to-end tests too'
+        type: boolean
+        default: false
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
+
+  # On demand only: Actions → CI → Run workflow → "Run the end-to-end tests too"
+  e2e:
+    if: github.event_name == 'workflow_dispatch' && inputs.e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      # The suite imports source modules from inside the page, so it runs against the dev server
+      - run: npm test
+      # The production build gets a smoke test of its own
+      - run: npm run build
+      - run: npx playwright test tests/app-shell.spec.js
+        env:
+          PW_PREVIEW: 1

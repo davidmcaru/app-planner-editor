@@ -1,0 +1,21 @@
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* Excepción deliberada: los spinners son feedback esencial — parados, no se sabe si carga o
+       cuelga. ⚠️ Las TRES clases del repo, una a una: `.loader-spinner` faltaba y se congelaba. */
+    .spinner,
+    .fa-spin,
+    .loader-spinner {
+        animation-duration: 1s !important;
+        animation-iteration-count: infinite !important;
+    }
+}

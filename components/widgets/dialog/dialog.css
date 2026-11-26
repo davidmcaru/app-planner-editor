@@ -1,0 +1,138 @@
+.edt-dlg-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.edt-dlg-overlay.active {
+    display: flex;
+}
+
+.edt-dlg {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    animation: edtDlgIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes edtDlgIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.edt-dlg__header {
+    padding: 20px 24px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edt-dlg__icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.edt-dlg__header h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.edt-dlg__body {
+    padding: 0 24px 16px;
+}
+
+.edt-dlg__body p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #4b5563;
+}
+
+.edt-dlg__body:first-child {
+    padding-top: 20px;
+}
+
+/* Una línea de más bajo el mensaje, como el enlace a la política del permiso de traducción */
+.edt-dlg__body .edt-dlg__nota {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.edt-dlg__body .edt-dlg__nota a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* El error de `check`: el diálogo sigue abierto hasta que se arregla */
+.edt-dlg__body .edt-dlg__error {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #dc2626;
+}
+
+.edt-dlg__input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+    padding: 9px 10px;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    background: #fff;
+    color: #2c3e50;
+    font-size: 14px;
+    font-family: inherit;
+}
+textarea.edt-dlg__input {
+    margin-top: 12px;
+}
+
+.edt-dlg__footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 4px 24px 24px;
+}
+
+.dark-mode .edt-dlg {
+    background: #1f1f1f;
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.dark-mode .edt-dlg__header h3 {
+    color: #f5f5f5;
+}
+.dark-mode .edt-dlg__body p {
+    color: #c4c9d0;
+}
+.dark-mode .edt-dlg__body .edt-dlg__error {
+    color: #f87171;
+}
+.dark-mode .edt-dlg__input {
+    background: #1a1a1a;
+    border-color: #333;
+    color: #f0f0f0;
+}

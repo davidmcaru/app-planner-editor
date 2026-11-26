@@ -1,0 +1,74 @@
+/* ── PLANNER PRINT — Estilos para impresión directa desde el navegador ── */
+
+@media print {
+    @page {
+        size: A5 portrait;
+        margin: 0;
+    }
+
+    site-header,
+    site-footer,
+    #plannerToolbar,
+    .planner-export-modal,
+    .planner-config,
+    .planner-config-backdrop,
+    .planner-cell-editor,
+    #planner-toast-container,
+    .edt-ss-panel,
+    .edt-dlg-overlay {
+        display: none !important;
+    }
+
+    body,
+    html {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    /* El hueco de la cabecera (header.css) pesa más que el `body` de arriba: con él el folio se sale de la hoja */
+    body.has-site-header {
+        padding-top: 0;
+    }
+
+    #app {
+        padding: 0;
+        margin: 0;
+        max-width: none;
+    }
+
+    .planner-pages {
+        gap: 0;
+        padding: 0;
+    }
+
+    .planner-page {
+        box-shadow: none;
+        border-radius: 0;
+        page-break-after: always;
+        margin: 0;
+        transform: none !important;
+    }
+
+    .planner-page:last-child {
+        page-break-after: auto;
+    }
+}
+
+/* ── Clase para exportación (ocultar chrome) ── */
+body.is-exporting #plannerToolbar,
+body.is-exporting .planner-export-modal,
+body.is-exporting .planner-config,
+body.is-exporting .planner-config-backdrop,
+body.is-exporting .planner-cell-editor,
+body.is-exporting #planner-toast-container,
+body.is-exporting .edt-ss-panel,
+body.is-exporting .edt-dlg-overlay {
+    display: none !important;
+}
+
+body.is-exporting .planner-page {
+    box-shadow: none !important;
+    transform: none !important;
+    margin: 0 !important;
+}

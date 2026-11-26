@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.vite/
+
+.env
+.env.*
+!.env.example
+
+*.log
+*.tmp
+
+playwright-report/
+test-results/
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# La marca del script que genera esta carpeta
+.copia-publica

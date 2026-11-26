@@ -1,0 +1,10 @@
+# Los textos, siempre con fin de línea LF, también en Windows
+* text=auto eol=lf
+
+# Los binarios no se tocan
+*.woff2 binary
+*.webp binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary

@@ -1,0 +1,48 @@
+.edt-section__reset,
+.postal-panel .adjust-btn,
+.postal-panel .reset-btn,
+.postal-panel .panel-icon-btn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    padding: 0;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 7px;
+    background: transparent;
+    color: #7f8c8d;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.postal-panel .adjust-btn:hover {
+    background: #f1f3f5;
+    border-color: #ced4da;
+    color: #495057;
+}
+.edt-section__reset:hover,
+.postal-panel .reset-btn:hover {
+    background: rgba(243, 156, 18, 0.1);
+    border-color: rgba(243, 156, 18, 0.4);
+    color: #d68910;
+    transform: none;
+}
+.postal-panel .panel-icon-btn:hover {
+    border-color: rgba(231, 76, 60, 0.35);
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    transform: none;
+}
+
+.edt-section__reset svg {
+    width: 16px;
+    height: 16px;
+}
+
+body.dark-mode .edt-section__reset {
+    border-color: #555;
+    color: #9aa4ad;
+}

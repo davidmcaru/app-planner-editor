@@ -1,0 +1,260 @@
+.edt-ss-outer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.edt-ss-dropdown {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+}
+
+/* Display (cabecera visible) — sobrio y LIGERO: texto gris medio y
+   borde fino #ddd como los steppers (+/−) del panel; nada de azules ni negritas
+   que destaquen sobre el resto de controles. */
+.edt-ss-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+    user-select: none;
+    min-height: 34px;
+}
+
+.edt-ss-display:hover,
+.edt-ss-display:focus {
+    border-color: #c9c9c9;
+    outline: none;
+}
+
+.edt-ss-display[aria-expanded='true'] {
+    border-color: #b9b9b9;
+}
+
+.edt-ss-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.edt-ss-chevron {
+    flex-shrink: 0;
+    font-size: 10px;
+    color: #999;
+    transition: transform 0.15s ease;
+}
+
+.edt-ss-display[aria-expanded='true'] .edt-ss-chevron {
+    transform: rotate(180deg);
+}
+
+.edt-ss-outer .reset-btn {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+}
+
+.edt-ss-panel {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    flex-direction: column;
+    max-height: 220px;
+}
+
+.edt-ss-panel.is-open {
+    display: flex;
+}
+
+.edt-ss-search {
+    flex-shrink: 0;
+    width: 100%;
+    padding: 6px 10px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    background: transparent;
+    color: #333;
+    box-sizing: border-box;
+}
+
+.edt-ss-search::placeholder {
+    color: #aaa;
+}
+
+.edt-ss-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+/* Cabecera de grupo (optgroup) — etiqueta sutil "— Grupo —" (estilo planner),
+   sin barra gris ni uppercase */
+.edt-ss-group {
+    padding: 6px 12px 2px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+}
+
+.edt-ss-group::before {
+    content: '— ';
+}
+
+.edt-ss-group::after {
+    content: ' —';
+}
+
+.edt-ss-option {
+    padding: 6px 12px;
+    font-size: 12.5px;
+    color: #444;
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+
+.edt-ss-option:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.edt-ss-option.is-selected {
+    background: rgba(74, 144, 217, 0.1);
+    font-weight: 600;
+}
+
+.edt-ss-option.is-focused {
+    background: rgba(74, 144, 217, 0.15);
+    outline: 2px solid rgba(74, 144, 217, 0.4);
+    outline-offset: -2px;
+}
+
+.dark-mode .edt-ss-display {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #b5b5b5;
+}
+
+.dark-mode .edt-ss-display:hover,
+.dark-mode .edt-ss-display:focus,
+.dark-mode .edt-ss-display[aria-expanded='true'] {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode .edt-ss-chevron {
+    color: #777;
+}
+
+.dark-mode .edt-ss-panel {
+    background: rgba(30, 32, 40, 0.92);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .edt-ss-search {
+    background: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    color: #cfcfcf;
+}
+
+.dark-mode .edt-ss-search::placeholder {
+    color: #666;
+}
+
+.dark-mode .edt-ss-group {
+    color: #777;
+}
+
+.dark-mode .edt-ss-option {
+    color: #cfcfcf;
+}
+
+.dark-mode .edt-ss-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .edt-ss-option.is-selected {
+    background: rgba(74, 144, 217, 0.2);
+}
+
+.dark-mode .edt-ss-option.is-focused {
+    background: rgba(74, 144, 217, 0.25);
+    outline-color: rgba(74, 144, 217, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.force-light) .edt-ss-display {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.16);
+        color: #b5b5b5;
+    }
+
+    html:not(.force-light) .edt-ss-display:hover,
+    html:not(.force-light) .edt-ss-display:focus,
+    html:not(.force-light) .edt-ss-display[aria-expanded='true'] {
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    html:not(.force-light) .edt-ss-chevron {
+        color: #777;
+    }
+
+    html:not(.force-light) .edt-ss-panel {
+        background: rgba(30, 32, 40, 0.92);
+        border-color: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    html:not(.force-light) .edt-ss-search {
+        background: transparent;
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+        color: #cfcfcf;
+    }
+
+    html:not(.force-light) .edt-ss-search::placeholder {
+        color: #666;
+    }
+
+    html:not(.force-light) .edt-ss-group {
+        color: #777;
+    }
+
+    html:not(.force-light) .edt-ss-option {
+        color: #cfcfcf;
+    }
+
+    html:not(.force-light) .edt-ss-option:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    html:not(.force-light) .edt-ss-option.is-selected {
+        background: rgba(74, 144, 217, 0.2);
+    }
+
+    html:not(.force-light) .edt-ss-option.is-focused {
+        background: rgba(74, 144, 217, 0.25);
+        outline-color: rgba(74, 144, 217, 0.5);
+    }
+}

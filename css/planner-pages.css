@@ -1,0 +1,1665 @@
+/* ── PLANNER PAGES — Estilos de las 3 páginas A5 del planificador ── */
+
+/* ── Página A5 base ── */
+.planner-page {
+    width: var(--planner-page-width);
+    height: var(--planner-page-height);
+    padding: var(--planner-page-padding);
+    box-sizing: border-box;
+    font-family: var(--planner-font-heading);
+    font-weight: var(--planner-heading-weight, 700);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+}
+
+/* Weekly uses A4 landscape — fit in viewport */
+.planner-pages--weekly .planner-page {
+    width: 297mm;
+    height: 210mm;
+    padding: 8mm 10mm;
+}
+
+/* La escala del folio apaisado NO se define aquí: la calcula `planner-responsive.css` de una vez
+   con el ancho Y el alto. Los dos escalones por altura que había (0.88 / 0.92) ganaban por orden
+   de carga al cálculo por ancho y dejaban el folio CORTADO en una ventana a media pantalla. */
+
+/* ── PÁGINA 1 — Organizador Mensual ── */
+
+/* ── Header del mes (más pequeño, más gris, más arriba) ── */
+.p1-header {
+    text-align: center;
+    margin-top: -1mm;
+    margin-bottom: 6mm;
+}
+
+.p1-header__month {
+    font-family: var(--planner-font-heading);
+    font-size: calc(14pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 900);
+    color: var(--planner-color-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.p1-header__year {
+    font-family: var(--planner-font-heading);
+    font-size: calc(8pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink);
+    letter-spacing: 0.25em;
+    margin: 0;
+}
+
+/* ── Monthly Goals — fieldset/legend (borde cerrado, título corta la línea superior) ── */
+.p1-goals {
+    margin-bottom: 7mm;
+}
+
+.p1-goals__fieldset {
+    border: 1px solid var(--planner-color-line);
+    border-radius: 1px;
+    padding: 2mm 4mm 5mm;
+    margin: 0;
+    min-height: 21mm;
+    display: flex;
+    flex-direction: column;
+}
+
+.p1-goals__legend {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--planner-color-ink-light);
+    padding: 0 3mm;
+    margin: 0 auto 0;
+    text-align: center;
+    float: none;
+    line-height: 1;
+}
+
+.p1-section-title {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--planner-color-ink-light);
+    margin: 0 0 2mm;
+}
+
+/* ── To Do + Top Priority (2 columnas) ── */
+.p1-dual-row {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 10mm;
+    min-height: 56mm;
+}
+
+.p1-todo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.p1-todo__item {
+    display: flex;
+    align-items: flex-end;
+    gap: 2mm;
+    flex: 1;
+    min-height: 7mm;
+}
+
+.p1-todo__circle {
+    width: 3.5mm;
+    height: 3.5mm;
+    border: 1px solid var(--planner-color-line);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.p1-todo__line {
+    flex: 1;
+    border-bottom: 1px solid var(--planner-color-line-light);
+    height: 0;
+    position: relative;
+}
+
+.p1-priority {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.p1-priority__box {
+    border: 1px solid var(--planner-color-line);
+    flex: 1;
+    border-radius: 1px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ── Habit Tracker ── */
+.p1-habits {
+    margin-bottom: 9mm;
+}
+
+.p1-habits__title-row {
+    margin-bottom: 0.5mm;
+}
+
+.p1-habits__title-row .p1-section-title {
+    margin: 0;
+}
+
+.p1-habits__table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+    table-layout: fixed;
+}
+
+.p1-habits__table th,
+.p1-habits__table td {
+    border: none;
+    padding: 0;
+    text-align: center;
+}
+
+.p1-habits__table .p1-habits__label-col {
+    width: 20mm;
+    text-align: left;
+    padding-right: 0;
+    vertical-align: middle;
+}
+
+.p1-habits__table .p1-habits__spacer-col {
+    width: 2mm;
+    border-bottom: none !important;
+}
+
+.p1-habits__label-text {
+    font-family: var(--planner-font-heading);
+    font-size: calc(4pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--planner-color-ink-light);
+}
+
+.p1-habits__table .p1-habits__day-num {
+    font-size: calc(4.5pt * var(--planner-title-factor, 1));
+    color: var(--planner-color-ink-light);
+    text-align: center;
+    font-weight: var(--planner-heading-weight, 700);
+    vertical-align: bottom;
+    line-height: 1;
+    padding-bottom: 0.5mm;
+}
+
+.p1-habits__table .p1-habits__row td {
+    height: 5mm;
+}
+
+.p1-habits__table .p1-habits__row-label {
+    border-bottom: 0.8px solid var(--planner-color-line);
+    text-align: left;
+    padding-right: 0;
+    vertical-align: middle;
+    height: 5mm;
+    position: relative;
+    overflow: hidden;
+}
+
+.p1-habits__table .p1-habits__spacer-cell {
+    border-bottom: none !important;
+}
+
+.p1-habits__table .p1-habits__circle-cell {
+    vertical-align: middle;
+}
+
+.p1-habits__circle {
+    width: 2.8mm;
+    height: 2.8mm;
+    border: 0.8px solid var(--planner-color-line);
+    border-radius: 50%;
+    box-sizing: content-box;
+    margin: 0 auto;
+}
+
+/* ── Gratitude + Self-care (2 columnas inferiores) ── */
+.p1-bottom-row {
+    display: flex;
+    flex: 1;
+    max-height: 30mm;
+}
+
+.p1-bottom-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.p1-bottom-box__title {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--planner-color-ink-light);
+    margin: 0 0 2mm;
+    padding-bottom: 1.5mm;
+    border-bottom: 1px solid var(--planner-color-line-light);
+}
+
+.p1-bottom-divider {
+    width: 0;
+    border-left: 1px solid var(--planner-color-line-light);
+    margin: 0 4mm -4mm;
+    align-self: stretch;
+}
+
+/* ── Section Texts (user-added text in planner sections) ── */
+.planner-section-text {
+    display: block;
+    font-family: var(--planner-font-body);
+    font-size: calc(7pt * var(--planner-text-factor, 1));
+    font-weight: var(--planner-body-weight, 400);
+    color: var(--planner-page-accent, var(--planner-color-ink));
+    line-height: 1.4;
+    padding: 1mm 1.5mm;
+    word-break: break-word;
+    overflow: hidden;
+}
+
+/* Section text inside todo lines — absolute to sit ON the ruled line */
+.p1-todo__line .planner-section-text,
+.ph-todo__line .planner-section-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Section text inside habit row labels — absolute overlay, no cell expansion */
+.p1-habits__row-label .planner-section-text,
+.ph-habits__row-label .planner-section-text {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Section text inside fieldsets (goals, priority) */
+.p1-goals__fieldset .planner-section-text,
+.ph-goals__fieldset .planner-section-text,
+.p1-priority__box .planner-section-text,
+.ph-priority__fieldset .planner-section-text {
+    padding: 0.5mm 2mm;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Section text inside bottom boxes (grateful, selfCare) */
+.p1-bottom-box .planner-section-text,
+.ph-bottom-box .planner-section-text {
+    padding: 0 0 1mm;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Lists inside section texts */
+.planner-section-text ul,
+.planner-section-text ol {
+    margin: 0;
+    padding-left: 3.5mm;
+    list-style-position: outside;
+}
+.planner-section-text ul {
+    list-style-type: disc;
+}
+.planner-section-text ol {
+    list-style-type: decimal;
+}
+.planner-section-text li {
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Editable section hints — shown during text edit mode */
+.is-section-editable {
+    outline: 1.5px dashed rgba(74, 144, 217, 0.45);
+    outline-offset: 1px;
+    border-radius: 2px;
+    background-color: rgba(74, 144, 217, 0.04);
+    transition:
+        outline-color 0.15s,
+        background-color 0.15s;
+}
+.is-section-editable:hover {
+    outline-color: rgba(74, 144, 217, 0.75);
+    background-color: rgba(74, 144, 217, 0.08);
+}
+
+/* ── PÁGINAS 2 & 3 — Calendario (split en 2 páginas) ── */
+
+/* ── Layout calendario ── */
+.p-cal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* ── Mini calendario (mes anterior/siguiente) ── */
+.p-cal__mini {
+    margin-bottom: 3mm;
+}
+
+.p-cal__mini--left {
+    text-align: left;
+}
+
+.p-cal__mini--right {
+    text-align: right;
+}
+
+.p-cal__mini-title {
+    font-family: var(--planner-font-heading);
+    font-size: calc(6pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--planner-color-ink-light);
+    margin: 0 0 1mm;
+}
+
+.p-cal__mini-grid {
+    display: inline-grid;
+    grid-template-columns: repeat(7, 4mm);
+    gap: 0.5mm;
+    font-size: calc(4.5pt * var(--planner-title-factor, 1));
+    color: var(--planner-color-ink-light);
+    text-align: center;
+}
+
+.p-cal__mini-grid .mini-head {
+    font-weight: 700;
+    font-size: calc(4pt * var(--planner-title-factor, 1));
+}
+
+/* ── Header del mes (página 2, header a la derecha) ── */
+.p-cal__header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    margin-bottom: 2mm;
+}
+
+/* When mini cal is absent, collapse header height to just the title */
+.p-cal__header:not(:has(.p-cal__mini)) {
+    min-height: auto;
+}
+
+/* Left header without mini: align title to the left */
+.p-cal__header--left:not(:has(.p-cal__mini)) {
+    justify-content: flex-start;
+}
+
+.p-cal__header--left .p-cal__mini {
+    margin-right: auto;
+}
+
+.p-cal__header--right {
+    justify-content: flex-end;
+}
+
+.p-cal__month-title {
+    font-family: var(--planner-font-heading);
+    font-size: calc(16pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 900);
+    color: var(--planner-color-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1;
+}
+
+.p-cal__year {
+    font-family: var(--planner-font-heading);
+    font-size: calc(9pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    letter-spacing: 0.2em;
+}
+
+.p-cal__title-block {
+    text-align: right;
+}
+
+.p-cal__title-block--left {
+    text-align: left;
+}
+
+/* ── Notes sidebar (página 2) ── */
+.p-cal__body {
+    display: flex;
+    flex: 1;
+    gap: 0;
+    min-height: 0;
+}
+
+/* Page 2: CSS Grid so notes bg starts at the grid row, not the headers row */
+.p-cal__body--with-notes {
+    display: grid;
+    grid-template-columns: 32mm 1fr;
+    grid-template-rows: auto 1fr;
+}
+
+.p-cal__body--with-notes .p-cal__day-headers {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.p-cal__body--with-notes .p-cal__notes {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.p-cal__body--with-notes .p-cal__grid {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.p-cal__notes {
+    background: var(--planner-color-notes-bg);
+    padding: 2mm;
+    display: flex;
+    flex-direction: column;
+}
+
+.p-cal__notes-title {
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--planner-color-ink-light);
+    margin-bottom: 3mm;
+}
+
+/* ── Grid del calendario ── */
+.p-cal__grid-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.p-cal__day-headers {
+    display: grid;
+    gap: 0;
+    padding-bottom: 1.5mm;
+}
+
+.p-cal__day-headers--3col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.p-cal__day-headers--4col {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.p-cal__day-name {
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--planner-color-ink-light);
+    text-align: center;
+    padding: 0 1mm;
+}
+
+.p-cal__day-name--sunday {
+    color: var(--planner-color-ink-light);
+    font-weight: 600;
+}
+
+.p-cal__grid {
+    display: grid;
+    flex: 1;
+    gap: 0;
+    min-height: 0;
+    border-top: 1px solid var(--planner-color-line);
+    border-left: 1px solid var(--planner-color-line);
+}
+
+.p-cal__grid--3col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.p-cal__grid--4col {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.p-cal__cell {
+    border-right: 1px solid var(--planner-color-line);
+    border-bottom: 1px solid var(--planner-color-line);
+    padding: 1.5mm 1mm 1mm 2mm;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.p-cal__cell-day {
+    font-family: var(--planner-font-heading);
+    font-size: calc(8pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    line-height: 1;
+}
+
+.p-cal__cell--sunday .p-cal__cell-day {
+    font-weight: 600;
+    color: var(--planner-color-ink-light);
+}
+
+/* Holiday / Vacation / Saturday cell styles for Pages 2/3 */
+.p-cal__cell--saturday .p-cal__cell-day {
+    font-weight: 600;
+    color: var(--planner-color-ink-light);
+}
+
+.p-cal__cell--holiday .p-cal__cell-day {
+    font-weight: 700;
+}
+
+.p-cal__cell--vacation .p-cal__cell-day {
+    font-weight: 700;
+}
+
+.p-cal__cell-info {
+    font-family: var(--planner-font-body);
+    font-size: calc(5.5pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    line-height: 1.2;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    display: block;
+    margin-top: auto;
+}
+
+/* ── Flex container for page 1 to fill the A5 height ── */
+.p1-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ── WEEKLY VIEW — Tabla horario semanal ── */
+
+.pw-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.pw-header {
+    text-align: center;
+    margin-bottom: 4mm;
+    padding-left: 48px; /* offset for hour column so title centers over data columns */
+}
+
+.pw-header__title {
+    font-family: var(--planner-font-heading);
+    /* 0.67em = el margen UA del h1 que era: al pasar a h2 el UA pondria 0.83em. */
+    margin: 0.67em 0;
+    font-size: calc(13pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    letter-spacing: 0.03em;
+    color: var(--planner-color-ink);
+}
+
+/* ── Table ── */
+.pw-table {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.pw-table__corner {
+    width: calc(48px * var(--planner-title-factor, 1));
+}
+
+.pw-table__day-header {
+    text-align: center;
+    padding: 3px 2px 6px;
+    border-bottom: 1.5px solid var(--planner-color-line);
+}
+
+.pw-table__day-name {
+    display: block;
+    font-family: var(--planner-font-heading);
+    font-size: calc(8.5pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--planner-color-ink);
+}
+
+.pw-table__day-date {
+    display: block;
+    font-family: var(--planner-font-heading);
+    font-size: calc(7.5pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    margin-top: 1px;
+}
+
+.pw-table__row {
+    height: calc((100% - 32px) / var(--weekly-row-count, 8));
+}
+
+.pw-table__row--block-start {
+    border-top: 1px solid var(--planner-color-line);
+}
+
+.pw-table__hour {
+    font-family: var(--planner-font-heading);
+    font-size: calc(9pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    text-align: right;
+    padding-right: 6px;
+    vertical-align: middle;
+    border-right: 1px solid var(--planner-color-line);
+    white-space: nowrap;
+}
+
+.pw-table__cell {
+    border-right: 1px solid var(--planner-color-line-light);
+    border-bottom: 1px dotted var(--planner-color-line-light);
+    vertical-align: top;
+    height: 0; /* prevent cell content from expanding row height */
+    position: relative;
+}
+
+.pw-table__row--block-start .pw-table__cell {
+    border-top: 1px solid var(--planner-color-line);
+}
+
+/* Last column no right border */
+.pw-table__cell:last-child {
+    border-right: none;
+}
+
+/* ── Accent color — only used for default-color cells via inline styles ── */
+
+/* ── Cell text (editable content) ── */
+
+.pw-table__cell-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--planner-font-body);
+    font-size: calc(9pt * var(--planner-text-factor, 1));
+    font-weight: var(--planner-body-weight, 400);
+    padding: 1px 2px;
+    overflow: hidden;
+    word-break: break-word;
+    white-space: pre-wrap;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.pw-table__cell-text--bold {
+    font-weight: 700;
+}
+
+/* ── Hour alignment variants ── */
+.pw-layout--align-top .pw-table__hour {
+    vertical-align: top;
+}
+.pw-layout--align-bottom .pw-table__hour {
+    vertical-align: bottom;
+}
+
+/* ── QUARTERLY VIEW — 3 meses en A4 landscape ── */
+
+/* Uses A4 landscape like weekly */
+.planner-pages--quarterly .planner-page {
+    width: 297mm;
+    height: 210mm;
+    padding: 6mm 8mm;
+}
+
+.pq-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── Year watermark ── */
+.pq-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--planner-font-heading);
+    font-size: 90mm;
+    font-weight: 900;
+    color: var(--planner-color-ink);
+    opacity: 0.06;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    pointer-events: none;
+    z-index: 0;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* ── Header ── */
+.pq-header {
+    text-align: center;
+    margin-bottom: 3mm;
+    position: relative;
+    z-index: 1;
+}
+
+.pq-header__title {
+    font-family: var(--planner-font-heading);
+    font-size: calc(16pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 900);
+    color: var(--planner-color-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.pq-header__subtitle {
+    font-family: var(--planner-font-heading);
+    font-size: calc(8pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* ── 3 month columns ── */
+.pq-months {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4mm;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.pq-month {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ── Month header ── */
+.pq-month__header {
+    padding-bottom: 1.5mm;
+    margin-bottom: 1mm;
+}
+
+.pq-month__name {
+    font-family: var(--planner-font-heading);
+    font-size: calc(10pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    letter-spacing: 0.08em;
+}
+
+/* ── Day rows ── */
+.pq-month__days {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.pq-day {
+    display: grid;
+    grid-template-columns: 20px 18px auto 1fr auto;
+    align-items: center;
+    gap: 0 2px;
+    min-height: 0;
+    flex: 1;
+    padding: 0 2px;
+    overflow: hidden;
+}
+
+.pq-day--no-abbrev {
+    grid-template-columns: 18px auto 1fr auto;
+}
+
+.pq-day--no-abbrev .pq-day__abbrev {
+    display: none;
+}
+
+.pq-day--saturday,
+.pq-day--sunday,
+.pq-day--holiday {
+    border-radius: 1px;
+}
+
+.pq-day--sunday,
+.pq-day--holiday {
+    font-weight: 600;
+}
+
+.pq-day__abbrev {
+    font-family: var(--planner-font-heading);
+    font-size: calc(6.3pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.pq-day--sunday .pq-day__abbrev,
+.pq-day--saturday .pq-day__abbrev,
+.pq-day--holiday .pq-day__abbrev {
+    font-weight: 700;
+}
+
+.pq-day--sunday .pq-day__num,
+.pq-day--saturday .pq-day__num,
+.pq-day--holiday .pq-day__num {
+    font-weight: 700;
+}
+
+.pq-day__num {
+    font-family: var(--planner-font-heading);
+    font-size: calc(6.3pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    text-align: center;
+}
+
+.pq-day__holiday {
+    font-family: var(--planner-font-body);
+    /* Los tres textos de la celda (festivo, vacaciones, texto) comparten tamaño 6pt y line-height
+       1.2 para verse iguales y alineados. */
+    font-size: calc(6pt * var(--planner-text-factor, 1));
+    /* Un pelín más de peso (600) para igualar la prominencia del texto custom, que aunque va a
+       peso 400 se ve más marcado por su color más contrastado. */
+    font-weight: 600;
+    line-height: 1.2;
+    padding-left: 2px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+}
+
+.pq-day__wk {
+    font-family: var(--planner-font-heading);
+    font-size: calc(6.3pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    text-align: right;
+    padding-right: 1px;
+    /* Siempre en la última columna, independientemente de cuántos elementos condicionales
+       (festivo/vacaciones/texto) haya, para que el nº de semana quede pegado a la derecha. */
+    grid-column: -2 / -1;
+}
+
+/* ── Vacation day highlight ── */
+.pq-day--vacation {
+    position: relative;
+}
+
+.pq-day__user-text {
+    font-family: var(--planner-font-body);
+    font-size: calc(6pt * var(--planner-text-factor, 1));
+    font-weight: var(--planner-body-weight, 400);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* Pequeño hueco (≈1 espacio) tras la marca de vacaciones/festivo. */
+    padding-left: 3px;
+}
+
+.pq-day__vacation {
+    font-family: var(--planner-font-body);
+    font-size: calc(6pt * var(--planner-text-factor, 1));
+    font-weight: 600;
+    line-height: 1.2;
+    padding-left: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── MONTHLY COMBINED — Calendario mensual completo A4 landscape Border system: border-top + border-left on grid container, border-right + border-bottom on cells (same as p-cal left/right). ── */
+
+/* Uses A4 landscape like weekly/quarterly */
+.planner-pages--monthly .planner-page {
+    width: 297mm;
+    height: 210mm;
+    padding: 6mm 8mm;
+}
+
+/* ── Layout ── */
+.pm-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: visible;
+}
+
+/* ── Year watermark ── */
+.pm-watermark {
+    position: absolute;
+    top: 50%;
+    left: calc(32mm + (100% - 32mm) / 2);
+    transform: translate(-50%, -50%);
+    font-family: var(--planner-font-heading);
+    font-size: 90mm;
+    font-weight: 900;
+    color: var(--planner-color-ink);
+    opacity: 0.06;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    pointer-events: none;
+    z-index: 10;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* No-notes: year watermark centers across full width */
+.pm-layout--no-notes .pm-watermark {
+    left: 50%;
+}
+
+/* ── Header ── */
+.pm-header {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 3mm;
+    min-height: 18mm;
+}
+
+/* When mini-cals are present, reserve enough vertical space */
+.pm-header--has-mini {
+    min-height: 30mm;
+}
+
+/* No-notes: header reserves fixed space so grid height stays constant */
+.pm-layout--no-notes .pm-header {
+    min-height: 30mm;
+}
+
+/* ── Header: mini-calendars (absolute at edges) ── */
+.pm-header__mini {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.pm-header__mini--left {
+    left: 0;
+}
+
+/* Mini-cal right: centered on Domingo column */
+/* Notes ON:  Domingo center = 32mm + (100% - 32mm) * 13/14 */
+/* Notes OFF: Domingo center = 100% * 13/14                  */
+.pm-layout:not(.pm-layout--no-notes) .pm-header__mini--right {
+    left: calc(32mm + (100% - 32mm) * 13 / 14);
+    right: auto;
+    transform: translate(-50%, -50%);
+}
+
+.pm-layout--no-notes .pm-header__mini--right {
+    left: calc(100% * 13 / 14);
+    right: auto;
+    transform: translate(-50%, -50%);
+}
+
+/* ── Header: title (absolute, centered over day columns) ── */
+.pm-header__title {
+    position: absolute;
+    margin: 0;
+    top: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+/* ── Notes ON: title positions relative to the 7 day columns ── */
+/* Center: border between Miércoles and Jueves = 3/7 of day columns */
+.pm-layout:not(.pm-layout--no-notes) .pm-header__title--center,
+.pm-layout:not(.pm-layout--no-notes) .pm-header__title {
+    left: calc(32mm + (100% - 32mm) * 3 / 7);
+    transform: translate(-50%, -50%);
+    align-items: center;
+}
+
+/* Left: page left edge with small inset */
+.pm-layout:not(.pm-layout--no-notes) .pm-header__title--left {
+    left: 3mm;
+    transform: translateY(-50%);
+    align-items: flex-start;
+}
+
+.pm-layout:not(.pm-layout--no-notes) .pm-header__title--right {
+    left: auto;
+    right: 0;
+    transform: translateY(-50%);
+    align-items: flex-end;
+}
+
+/* ── Notes OFF: title positions relative to full page width ── */
+.pm-layout--no-notes .pm-header__title--center,
+.pm-layout--no-notes .pm-header__title {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+}
+
+.pm-layout--no-notes .pm-header__title--right {
+    left: auto;
+    right: 0;
+    transform: translateY(-50%);
+    align-items: flex-end;
+}
+
+/* ── Inline variants (row layout) ── */
+.pm-header__title--left-inline,
+.pm-header__title--center-inline,
+.pm-header__title--right-inline {
+    flex-direction: row;
+    gap: 3mm;
+    align-items: baseline;
+}
+
+/* Notes ON inline */
+.pm-layout:not(.pm-layout--no-notes) .pm-header__title--center-inline {
+    left: calc(32mm + (100% - 32mm) * 3 / 7);
+    transform: translate(-50%, -50%);
+}
+
+.pm-layout:not(.pm-layout--no-notes) .pm-header__title--left-inline {
+    left: 3mm;
+    transform: translateY(-50%);
+}
+
+.pm-layout:not(.pm-layout--no-notes) .pm-header__title--right-inline {
+    left: auto;
+    right: 0;
+    transform: translateY(-50%);
+}
+
+/* Notes OFF inline */
+.pm-layout--no-notes .pm-header__title--center-inline {
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.pm-layout--no-notes .pm-header__title--right-inline {
+    left: auto;
+    right: 0;
+    transform: translateY(-50%);
+}
+
+.pm-header__month {
+    font-family: var(--planner-font-heading);
+    font-size: calc(16pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 900);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--planner-color-ink);
+    line-height: 1.2;
+}
+
+.pm-header__year {
+    font-family: var(--planner-font-heading);
+    font-size: calc(9pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    letter-spacing: 0.2em;
+}
+
+/* Inline mode: year matches month size */
+.pm-header__title--left-inline .pm-header__year,
+.pm-header__title--center-inline .pm-header__year,
+.pm-header__title--right-inline .pm-header__year {
+    font-family: var(--planner-font-heading);
+    font-size: calc(16pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 900);
+    color: var(--planner-color-ink);
+    letter-spacing: 0.15em;
+}
+
+/* ── Day name headers (outside bordered grid) ── */
+.pm-day-headers {
+    display: grid;
+    grid-template-columns: 32mm repeat(7, 1fr);
+    gap: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* No-notes variant: day headers take full width */
+.pm-layout--no-notes .pm-day-headers {
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.pm-day-header {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--planner-color-ink-light);
+    text-align: center;
+    padding: 0 1mm;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 1.5mm;
+}
+
+.pm-day-header--notes {
+    justify-content: flex-start;
+    padding-left: 2mm;
+}
+
+.pm-day-header--sunday {
+    font-weight: 700;
+}
+
+/* ── Bordered grid (notes + 7 day columns) ── */
+.pm-grid {
+    display: grid;
+    grid-template-columns: 32mm repeat(7, 1fr);
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    z-index: 1;
+    gap: 0;
+    overflow: visible;
+    border-top: 1px solid var(--planner-color-line);
+    border-left: 1px solid var(--planner-color-line);
+}
+
+/* No-notes variant: grid is only 7 day columns */
+.pm-layout--no-notes .pm-grid {
+    grid-template-columns: repeat(7, 1fr);
+}
+
+/* ── Notes column ── */
+.pm-notes {
+    grid-column: 1;
+    padding: 3mm 2mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    border-right: 1px solid var(--planner-color-line);
+    border-bottom: 1px solid var(--planner-color-line);
+    background: color-mix(in srgb, var(--planner-color-paper) 90%, #000);
+}
+
+/* ── Calendar cells ── */
+.pm-cell {
+    border-right: 1px solid var(--planner-color-line);
+    border-bottom: 1px solid var(--planner-color-line);
+    padding: 1.5mm 1.5mm 1mm;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: visible;
+}
+
+.pm-cell--empty {
+    background: transparent;
+}
+
+/* ── Overflow days (prev/next month) ── */
+.pm-cell__day--overflow {
+    opacity: 0.2;
+}
+
+.pm-cell__info--overflow {
+    opacity: 0.15;
+    color: var(--planner-color-ink-light);
+}
+
+.pm-cell--overflow-weekend {
+    background: color-mix(in srgb, var(--planner-color-paper) 95%, #000);
+}
+
+.pm-cell--overflow-weekday {
+    background: color-mix(in srgb, var(--planner-color-paper) 97.5%, #000);
+}
+
+.pm-cell__day {
+    font-family: var(--planner-font-heading);
+    font-size: calc(9pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    line-height: 1;
+    order: 0;
+}
+
+.pm-cell--sunday .pm-cell__day {
+    font-weight: 700;
+}
+
+.pm-cell__user-text {
+    font-family: var(--planner-font-body);
+    font-size: calc(5.5pt * var(--planner-text-factor, 1));
+    font-weight: var(--planner-body-weight, 400);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    margin-top: 0.5mm;
+    order: 2;
+    align-self: flex-start;
+}
+
+.pm-cell__info {
+    font-family: var(--planner-font-body);
+    font-size: calc(5.5pt * var(--planner-text-factor, 1));
+    font-weight: var(--planner-body-weight, 400);
+    line-height: 1.2;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    order: 1;
+}
+
+.pm-cell__vacation {
+    font-family: var(--planner-font-body);
+    font-size: calc(5.5pt * var(--planner-text-factor, 1));
+    font-weight: var(--planner-body-weight, 400);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: auto;
+    order: 3;
+}
+
+/* ── Week number marks (subtle, absolute to the right of Sunday cells) ── */
+.pm-wk-mark {
+    position: absolute;
+    right: -5.5mm;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--planner-font-heading);
+    font-size: calc(6pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    color: var(--planner-color-ink-light);
+    opacity: 0.35;
+    pointer-events: none;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* ── QR in notes area ── */
+.planner-qr-watermark--monthly-combined {
+    width: 25mm;
+    height: auto;
+    opacity: 0.3;
+    margin-top: auto;
+}
+
+/* QR overlaying the grid (top-left, centered on Monday column) */
+.planner-qr-watermark--grid-overlay {
+    position: absolute;
+    top: 0;
+    left: calc(100% / 14);
+    transform: translateX(-50%);
+    width: 25mm;
+    height: auto;
+    opacity: 0.3;
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* ── PLANNER HORIZONTAL — Organizador A4 landscape ── */
+
+.planner-pages--planner-h .planner-page {
+    width: 297mm;
+    height: 210mm;
+    padding: 6mm 8mm;
+}
+
+/* ── Layout ── */
+.ph-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── Header ── */
+.ph-header {
+    margin-bottom: 4mm;
+    padding-bottom: 2mm;
+}
+
+.ph-header--left {
+    padding-left: 2mm;
+}
+
+.ph-header__month {
+    font-family: var(--planner-font-heading);
+    font-size: calc(16pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 900);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--planner-color-ink);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.ph-header__year {
+    font-family: var(--planner-font-heading);
+    font-size: calc(8pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--planner-color-ink);
+    margin: 0;
+}
+
+/* ── Section title ── */
+.ph-section-title {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--planner-color-ink-light);
+    margin: 0 0 1.5mm;
+}
+
+/* ── Top Row: Goals (left) | Habits + Tareas (right) ── */
+.ph-top-row {
+    display: flex;
+    gap: 12mm;
+    flex: 0 0 auto;
+    min-height: 0;
+    margin-bottom: 8mm;
+    align-items: stretch;
+}
+
+/* Goals */
+.ph-goals {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.ph-goals__fieldset {
+    margin: 0;
+    padding: 2mm 3mm 2mm;
+    border: 1px solid var(--planner-color-line);
+    flex: 1;
+    min-height: 51mm;
+    display: flex;
+    flex-direction: column;
+}
+
+.ph-goals__legend {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--planner-color-ink-light);
+    float: none;
+    padding: 0 3mm;
+    margin: 0 auto 0;
+    line-height: 1;
+}
+
+/* Right column: Habits + Tareas stacked vertically */
+.ph-right-col {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 6mm;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Habits */
+.ph-habits {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.ph-habits__title-row {
+    margin-bottom: 0.5mm;
+}
+
+.ph-habits__table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+    table-layout: fixed;
+}
+
+.ph-habits__table th,
+.ph-habits__table td {
+    border: none;
+    padding: 0;
+    text-align: center;
+}
+
+.ph-habits__table .ph-habits__label-col {
+    width: 20mm;
+    text-align: left;
+    padding-right: 0;
+    vertical-align: middle;
+}
+
+.ph-habits__table .ph-habits__spacer-col {
+    width: 2mm;
+    border-bottom: none !important;
+}
+
+.ph-habits__label-text {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    color: var(--planner-color-ink-light);
+}
+
+.ph-habits__table .ph-habits__day-num {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-align: center;
+    color: var(--planner-color-ink-light);
+    vertical-align: middle;
+    line-height: 1;
+    padding-bottom: 0;
+}
+
+.ph-habits__table .ph-habits__row td {
+    height: 6mm;
+}
+
+.ph-habits__table .ph-habits__row-label {
+    border-bottom: 0.8px solid var(--planner-color-line);
+    text-align: left;
+    padding-right: 0;
+    vertical-align: middle;
+    height: 6mm;
+    position: relative;
+    overflow: hidden;
+}
+
+.ph-habits__table .ph-habits__spacer-cell {
+    border-bottom: none !important;
+}
+
+.ph-habits__table .ph-habits__circle-cell {
+    vertical-align: middle;
+}
+
+.ph-habits__circle {
+    width: 3.2mm;
+    height: 3.2mm;
+    border: 0.8px solid var(--planner-color-line);
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+/* Tareas (inside right column, below habits) */
+.ph-todo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ph-todo__item {
+    display: flex;
+    align-items: flex-end;
+    gap: 2mm;
+    min-height: 7mm;
+}
+
+.ph-todo__circle {
+    width: 3.5mm;
+    height: 3.5mm;
+    border: 1px solid var(--planner-color-line);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ph-todo__line {
+    flex: 1;
+    border-bottom: 1px solid var(--planner-color-line-light);
+    min-height: 1.5mm;
+    position: relative;
+}
+
+/* ── Bottom Row: Grateful + Self-care + Priority ── */
+.ph-bottom-row {
+    display: flex;
+    gap: 6mm;
+    flex: 1;
+    min-height: 0;
+    margin-top: 2mm;
+}
+
+.ph-bottom-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.ph-bottom-box--left-inset {
+    padding-left: 2mm;
+}
+
+.ph-bottom-divider {
+    width: 0;
+    border-left: 1px solid var(--planner-color-line-light);
+    align-self: stretch;
+}
+
+.ph-bottom-box__title {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--planner-color-ink-light);
+    border-bottom: none;
+    padding-bottom: 0;
+    margin: 0 0 2mm;
+}
+
+.ph-priority__fieldset {
+    flex: 1;
+    margin: 0;
+    padding: 3mm 4mm;
+    border: 1px solid var(--planner-color-line);
+    border-radius: 1px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.ph-priority__legend {
+    font-family: var(--planner-font-heading);
+    font-size: calc(7pt * var(--planner-title-factor, 1));
+    font-weight: var(--planner-heading-weight, 700);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--planner-color-ink-light);
+    padding: 0 2mm;
+    margin: 0;
+    margin-left: 2mm;
+    text-align: left;
+    float: none;
+}
+
+/* QR for A4h planner */
+.planner-qr-watermark--a4h {
+    width: 28mm;
+    height: auto;
+    opacity: 0.3;
+}
+
+.planner-pages > .planner-page:nth-of-type(n + 2) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto var(--planner-page-height);
+}
+body.is-exporting .planner-pages > .planner-page {
+    content-visibility: visible;
+}
+@media print {
+    .planner-pages > .planner-page {
+        content-visibility: visible;
+    }
+}

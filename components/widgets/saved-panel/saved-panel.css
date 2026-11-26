@@ -1,0 +1,372 @@
+.edt-saved-topbar {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07); /* separador igual que el de encima del footer */
+}
+.dark-mode .edt-saved-topbar,
+html:not(.force-light) .edt-saved-topbar {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+.edt-saved-topbar .edt-saved-btn {
+    flex: 1;
+    padding: 9px 8px; /* algo menos de padding lateral para que quepan en 1 línea */
+    gap: 6px;
+}
+
+.edt-saved-grid {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* ⚠️ max-content y no 'auto': con el grid de alto definido, las filas auto se comprimen para
+       caber y las tarjetas cuadradas se aplastan */
+    grid-auto-rows: max-content;
+    gap: 10px;
+    align-content: start;
+    padding: 6px 4px;
+    margin-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.edt-saved-grid::-webkit-scrollbar {
+    width: 6px;
+}
+.edt-saved-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+.edt-saved-empty {
+    grid-column: 1 / -1;
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+    padding: 28px 8px;
+}
+
+/* ⚠️ El cuadrado sale del padding-hack y NO de aspect-ratio, para que sea idéntico en todos los
+   navegadores; el contenido va absoluto para no alterar el alto */
+.edt-saved-card {
+    position: relative;
+    border: 1px solid #dbe1e6;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    /* Sin sombra, las bandas blancas de un diseño horizontal se funden con la tarjeta vecina */
+    box-shadow: 0 1px 3px rgba(13, 27, 42, 0.12);
+}
+
+/* ⚠️ El grosor lo da un anillo SÓLIDO: el translúcido no se veía sobre un borde de 1px, y así
+   equivale al borde de 3px de galería sin mover el layout */
+.edt-saved-card.is-applied {
+    border-color: var(--edt-card-selected);
+    background: var(--edt-card-selected-bg);
+    box-shadow:
+        0 0 0 2px var(--edt-card-selected),
+        0 1px 3px rgba(13, 27, 42, 0.12);
+}
+.edt-saved-card::before {
+    content: '';
+    display: block;
+    padding-top: 100%; /* alto = ancho → cuadrado perfecto en cualquier navegador */
+}
+.edt-saved-card__apply {
+    /* ⚠️ Absoluto para que el alto lo fije SOLO el padding-hack, mida lo que mida la miniatura */
+    position: absolute;
+    inset: 0;
+    padding: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.edt-saved-card__apply:hover {
+    background: #f5f5f5;
+}
+.edt-saved-card__thumb {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+.edt-saved-card__swatch {
+    width: 70%;
+    height: 70%;
+    border-radius: 6px;
+    border: 1px solid #e8ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.edt-saved-card__swatch i {
+    font-size: 22px;
+    color: rgba(0, 0, 0, 0.22);
+}
+
+/* ⚠️ El contenedor deja pasar el clic a la miniatura (que es «aplicar»): solo los botones capturan */
+.edt-saved-card__actions {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+.edt-saved-card:hover .edt-saved-card__actions,
+.edt-saved-card:focus-within .edt-saved-card__actions {
+    opacity: 1;
+}
+.edt-saved-card__act {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #2c3e50;
+    font-size: 12px;
+    cursor: pointer;
+    pointer-events: none; /* solo interactivos cuando la tarjeta está en hover/táctil */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+    transition:
+        background 0.15s,
+        color 0.15s,
+        transform 0.1s;
+}
+.edt-saved-card:hover .edt-saved-card__act,
+.edt-saved-card:focus-within .edt-saved-card__act {
+    pointer-events: auto;
+}
+.edt-saved-card__act:hover {
+    background: #667eea;
+    color: #fff;
+    transform: translateY(-1px);
+}
+.edt-saved-card__act--danger {
+    margin-top: auto;
+}
+.edt-saved-card__act--danger:hover {
+    background: #e5484d;
+}
+/* ⚠️ Va anclada la primera y el drag&drop compartido la EXCLUYE: no es un diseño guardado */
+/* Hover/cargando HOMOGÉNEO: el mismo gris suave llena la tarjeta entera Y la caja — coherente con el hover de las tarjetas de contenido. */
+.edt-saved-card--add .edt-saved-card__apply:hover:not(:disabled),
+.edt-saved-card--add .edt-saved-card__apply.is-loading {
+    background: #f2f4f7;
+}
+.edt-saved-card--add .edt-saved-card__apply:disabled {
+    cursor: not-allowed;
+}
+.edt-saved-card__add-box {
+    width: 70%;
+    height: 70%;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px;
+    box-sizing: border-box;
+    background: transparent;
+    border: 1px dashed #c6ced5;
+    color: #9aa3ab;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        color 0.15s;
+}
+.edt-saved-card__add-box i {
+    font-size: 20px;
+}
+/* Solo al HOVER: borde firme y texto oscuro en la caja. Generando (is-loading) conserva
+   el gris tenue del reposo — el fondo homogéneo ya lo señala. */
+.edt-saved-card--add .edt-saved-card__apply:hover:not(:disabled) .edt-saved-card__add-box {
+    border-color: #9aa3ab;
+    color: #3a4149;
+}
+.edt-saved-card--add .edt-saved-card__apply:disabled:not(.is-loading) .edt-saved-card__add-box {
+    opacity: 0.5;
+}
+.dark-mode .edt-saved-card--add .edt-saved-card__apply:hover:not(:disabled),
+.dark-mode .edt-saved-card--add .edt-saved-card__apply.is-loading {
+    background: rgba(255, 255, 255, 0.07);
+}
+.dark-mode .edt-saved-card__add-box {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.55);
+}
+.dark-mode .edt-saved-card--add .edt-saved-card__apply:hover:not(:disabled) .edt-saved-card__add-box {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #d5d9de;
+}
+
+.edt-saved-card__drag {
+    cursor: grab;
+}
+.edt-saved-card__drag:active {
+    cursor: grabbing;
+}
+.edt-saved-card.is-dragging {
+    opacity: 0.5;
+}
+@media (hover: none) {
+    /* En pantallas táctiles no hay hover: mostrar y activar siempre los botones de acción */
+    .edt-saved-card__actions {
+        opacity: 1;
+    }
+    .edt-saved-card__act {
+        pointer-events: auto;
+    }
+}
+
+.edt-saved-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap; /* etiqueta en 1 sola línea (con border-box podía saltar a 2) */
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    background: #f6f8fa;
+    color: #2c3e50;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+}
+.edt-saved-btn:hover:not(:disabled) {
+    background: #eef1f4;
+}
+.edt-saved-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.edt-saved-btn--primary {
+    background: #f2f4f7;
+    border: 2px solid #aab1b9;
+    color: #3a4149;
+}
+.edt-saved-btn--primary:hover:not(:disabled) {
+    background: #e9edf1;
+    border-color: #949ca4;
+}
+/* "Añadir código" de la barra superior: el AZUL de los toggles (tokens --edt-tgl-*).
+   Scope acotado a la barra para NO afectar a botones del modal que compartan clase. */
+.edt-saved-topbar .edt-saved-btn:not(.edt-saved-btn--primary) {
+    background: var(--edt-tgl-active-bg);
+    border: 2px solid var(--edt-tgl-active-border);
+    color: var(--edt-tgl-accent);
+}
+.edt-saved-topbar .edt-saved-btn:not(.edt-saved-btn--primary):hover:not(:disabled) {
+    background: rgba(74, 144, 217, 0.28);
+    border-color: rgba(74, 144, 217, 0.6);
+}
+/* Variante AZUL explícita, usable fuera de la barra. */
+.edt-saved-btn--blue {
+    background: var(--edt-tgl-active-bg);
+    border: 2px solid var(--edt-tgl-active-border);
+    color: var(--edt-tgl-accent);
+}
+.edt-saved-btn--blue:hover:not(:disabled) {
+    background: rgba(74, 144, 217, 0.28);
+    border-color: rgba(74, 144, 217, 0.6);
+}
+
+/* "Añadir desde código": label del diálogo + textarea del código (ancho completo, NO
+   redimensionable). El contenedor del diálogo lo pone cada app. */
+.edt-saved-paste-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-transform: none; /* estilo frase, NO mayúsculas (como el diálogo de restablecer) */
+    color: #4b5563;
+}
+.dark-mode .edt-saved-paste-label {
+    color: #c4c9d0;
+}
+.edt-saved-paste {
+    width: 100%;
+    box-sizing: border-box;
+    resize: none;
+    font-family: monospace;
+    font-size: 11px;
+    padding: 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    background: #fff;
+    color: #2c3e50;
+}
+
+.dark-mode .edt-saved-card {
+    background: #242424;
+    border-color: #3a3a3a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+.dark-mode .edt-saved-card.is-applied {
+    border-color: var(--edt-card-selected);
+    background: var(--edt-card-selected-bg);
+    box-shadow:
+        0 0 0 2px var(--edt-card-selected),
+        0 1px 3px rgba(0, 0, 0, 0.45);
+}
+.dark-mode .edt-saved-card__apply:hover {
+    background: #2e2e2e;
+}
+.dark-mode .edt-saved-card__swatch {
+    border-color: #333;
+}
+.dark-mode .edt-saved-card__swatch i {
+    color: rgba(255, 255, 255, 0.3);
+}
+.dark-mode .edt-saved-card__act {
+    background: rgba(40, 40, 40, 0.92);
+    color: #e8e8e8;
+}
+.dark-mode .edt-saved-btn {
+    background: #242424;
+    border-color: #333;
+    color: #f0f0f0;
+}
+.dark-mode .edt-saved-btn:hover:not(:disabled) {
+    background: #2e2e2e;
+}
+.dark-mode .edt-saved-btn--primary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.24);
+    color: #d5d9de;
+}
+.dark-mode .edt-saved-btn--primary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.34);
+}
+.dark-mode .edt-saved-paste {
+    background: #1a1a1a;
+    border-color: #333;
+    color: #f0f0f0;
+}
+.dark-mode .edt-saved-empty {
+    color: #999;
+}

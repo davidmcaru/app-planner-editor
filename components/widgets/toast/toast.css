@@ -1,0 +1,57 @@
+.edt-toast-container {
+    position: fixed;
+    bottom: var(--edt-toast-bottom, 24px);
+    right: var(--edt-toast-right, 24px);
+    left: var(--edt-toast-left, auto);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+/* Fondo AZUL #2570C2 para los avisos normales del editor —tipo `info` (el base) y
+   `success`—. Solo error y advertencia rompen el azul,
+   por ser estados que el usuario debe distinguir de un vistazo. */
+.edt-toast {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(37, 112, 194, 0.92);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.25s ease;
+    pointer-events: auto;
+    max-width: var(--edt-toast-max-width, 320px);
+}
+
+.edt-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* (`success` no declara fondo propio: hereda el azul del base, que es el mismo.) */
+
+.edt-toast--warning {
+    background: rgba(120, 80, 0, 0.9);
+}
+
+.edt-toast--error {
+    background: rgba(140, 20, 20, 0.9);
+}
+
+.edt-toast-sr-alert {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <meta name="color-scheme" content="light dark" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Planner" />
+        <meta property="og:description" content="Planner imprimible en cuatro vistas. 16 temas, 11 tipografías y festivos por comunidad y capital de provincia. Exporta en PDF o imagen. Español, inglés y alemán." />
+
+        <title>Planner</title>
+        <style>
+            :root {
+                --bp: d;
+            }
+            @media (max-width: 1024px) {
+                :root {
+                    --bp: t;
+                }
+            }
+            @media (max-width: 728px) {
+                :root {
+                    --bp: m;
+                }
+            }
+        </style>
+        <meta
+            name="description"
+            content="Planner imprimible en cuatro vistas. 16 temas, 11 tipografías y festivos por comunidad y capital de provincia. Exporta en PDF o imagen. Español, inglés y alemán."
+        />
+
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+        <!-- Estilos compartidos -->
+        <link rel="stylesheet" href="/components/core/styles/style-base.css" />
+        <link rel="stylesheet" href="/components/core/styles/reduced-motion.css" />
+        <link rel="stylesheet" href="/components/core/page-fade/page-fade.css" />
+        <link rel="stylesheet" href="/components/layout/app-header/app-header.css" />
+        <link rel="stylesheet" href="/components/core/styles/lang-badge.css" />
+        <link rel="stylesheet" href="/components/core/styles/editor-tokens.css" />
+        <link rel="stylesheet" href="/components/core/styles/editor-toolbar.css" />
+        <link rel="stylesheet" href="/components/core/styles/editor-actions.css" />
+        <link rel="stylesheet" href="/components/widgets/toast/toast.css" />
+        <link rel="stylesheet" href="/components/widgets/dialog/dialog.css" />
+        <link rel="stylesheet" href="/components/widgets/panel-sheet/panel-sheet.css" />
+        <link rel="stylesheet" href="/components/widgets/searchable-select/searchable-select.css" />
+        <link rel="stylesheet" href="/components/widgets/collapsible-section/collapsible-section.css" />
+        <!-- Da forma al `.edt-section__reset` de las cabeceras de sección: sin ella el botón sale aplastado. -->
+        <link rel="stylesheet" href="/components/core/styles/editor-icon-btn.css" />
+        <link rel="stylesheet" href="/components/widgets/saved-panel/saved-panel.css" />
+
+        <!-- CSS de la app -->
+        <link rel="stylesheet" href="css/planner-base.css" />
+        <link rel="stylesheet" href="css/planner-pages.css" />
+        <link rel="stylesheet" href="css/planner-responsive.css" />
+        <link rel="stylesheet" href="css/planner-print.css" />
+
+        <!-- Tipografías del planner: los archivos están en public/fonts -->
+        <link rel="stylesheet" href="css/planner-fonts.css" />
+
+        <!-- Los iconos (Font Awesome) y el PDF (jsPDF) entran por npm, como html-to-image: los bundlea Vite -->
+        <script type="module" src="js/planner-libs.ts"></script>
+
+        <!-- FOUC Prevention -->
+        <style>
+            :root {
+                --color-accent: #2570c2;
+                --color-accent-rgb: 37, 112, 194;
+                --color-background: #ffffff;
+                --color-text-primary: #1a1a1a;
+                --color-text-secondary: #666;
+                --color-border: #cccccc;
+                --color-light-gray-bg: #f4f6f9;
+                --header-height: 61px;
+            }
+            html.dark-mode,
+            html.dark-mode body,
+            body.dark-mode {
+                background: #0a0a0a !important;
+                color: #e0e0e0 !important;
+                --color-background: #0a0a0a;
+                --color-background-rgb: 10, 10, 10;
+                --color-text-primary: #ffffff;
+                --color-text-secondary: #b0b0b0;
+                --color-accent: #bdf0ff;
+                --color-accent-rgb: 189, 240, 255;
+                --color-light-gray-bg: #1a1a1a;
+                --color-border: #333333;
+            }
+            /* Fade de entrada: componente global page-fade. */
+        </style>
+        <script>
+            (function () {
+                try {
+                    // Migración one-time del legacy `darkMode` → `theme-preference` (unificación de tema).
+                    var saved = localStorage.getItem('theme-preference');
+                    var legacy = localStorage.getItem('darkMode');
+                    if (!saved && legacy !== null) {
+                        saved = legacy === 'true' ? 'dark' : 'light';
+                        localStorage.setItem('theme-preference', saved);
+                    }
+                    try {
+                        localStorage.removeItem('darkMode');
+                    } catch (_e) {}
+
+                    var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    var shouldBeDark = saved === 'dark' || ((!saved || saved === 'auto') && systemDark);
+                    var root = document.documentElement;
+
+                    if (shouldBeDark) {
+                        root.classList.add('dark-mode', 'force-dark');
+                        root.classList.remove('force-light');
+                        root.style.backgroundColor = '#0a0a0a';
+                        root.style.colorScheme = 'dark';
+                    } else {
+                        root.classList.add('force-light');
+                        root.classList.remove('dark-mode', 'force-dark');
+                        root.style.colorScheme = 'only light';
+                    }
+
+                    var applyToBody = function () {
+                        if (shouldBeDark) {
+                            document.body.classList.add('dark-mode', 'force-dark');
+                            document.body.classList.remove('force-light');
+                        } else {
+                            document.body.classList.add('force-light');
+                            document.body.classList.remove('dark-mode', 'force-dark');
+                        }
+                    };
+                    if (document.body) {
+                        applyToBody();
+                    } else {
+                        document.addEventListener('DOMContentLoaded', applyToBody, { once: true });
+                    }
+                } catch (_e) {}
+            })();
+        </script>
+
+        <!-- Theme toggle -->
+        <script type="module" src="/components/core/theme/theme-toggle.ts"></script>
+    </head>
+    <body class="page-preload has-site-header" data-page-fade="manual">
+        <site-header>
+            <header class="site-header app-header">
+                <a class="app-header__brand" href="./">
+                    <img class="app-header__logo" src="/favicon.svg" alt="" width="28" height="28" />
+                    <span data-i18n="appTitle">Planificador</span>
+                </a>
+                <div class="app-header__actions">
+                    <a
+                        class="app-header__btn"
+                        data-repo-link
+                        href="#"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Código fuente"
+                        title="Código fuente"
+                        data-i18n-aria="headerSourceLabel"
+                        data-i18n-title="headerSourceLabel"
+                    >
+                        <i class="fab fa-github" aria-hidden="true"></i>
+                    </a>
+                    <button
+                        class="app-header__btn"
+                        id="settingsToggle"
+                        type="button"
+                        aria-haspopup="dialog"
+                        aria-expanded="false"
+                        aria-controls="settingsMenu"
+                        aria-label="Ajustes"
+                        title="Ajustes"
+                        data-i18n-aria="headerSettingsLabel"
+                        data-i18n-title="headerSettingsLabel"
+                    >
+                        <i class="fas fa-gear" aria-hidden="true"></i>
+                    </button>
+                    <button class="app-header__btn" id="theme-toggle" type="button" aria-label="Cambiar tema" title="Cambiar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+            <div
+                class="app-header__menu"
+                id="settingsMenu"
+                role="dialog"
+                aria-labelledby="settingsMenuTitle"
+                data-ajuste="planner-translation-consent"
+                hidden
+            >
+                <p class="app-header__menu-title" id="settingsMenuTitle" data-i18n="settingsTranslationTitle">
+                    Traducción automática
+                </p>
+                <p class="app-header__menu-help" data-i18n="settingsTranslationHelp">
+                    Envía los textos de tus celdas a MyMemory, un traductor gratuito que funciona fuera de esta app.
+                </p>
+                <div role="radiogroup" aria-labelledby="settingsMenuTitle">
+                    <label class="app-header__option">
+                        <input type="radio" name="translationConsent" value="ask" />
+                        <span data-i18n="settingsTranslationAsk">Preguntar antes</span>
+                    </label>
+                    <label class="app-header__option">
+                        <input type="radio" name="translationConsent" value="granted" />
+                        <span data-i18n="settingsTranslationGranted">Traducir siempre</span>
+                    </label>
+                    <label class="app-header__option">
+                        <input type="radio" name="translationConsent" value="denied" />
+                        <span data-i18n="settingsTranslationDenied">No traducir nunca</span>
+                    </label>
+                </div>
+            </div>
+        </site-header>
+
+        <main id="app">
+            <h1 class="planner-sr-only" data-i18n="appTitle">Planificador</h1>
+            <!-- Toolbar: pill en escritorio, bottom bar en móvil. Orden:
+                 Idioma │ Config · Textos │ Diseño · Temas │ Guardados · Deshacer · Rehacer │ Más · Descargar.
+                 Traducir textos va pegado a Idioma y solo aparece si hay textos en otro idioma que la interfaz.
+                 En móvil (≤728) los `--desk` se van al sheet «Más» y quedan 6: Idioma, Config, Temas,
+                 Deshacer, Rehacer y Más. -->
+            <div class="edt-toolbar" id="plannerToolbar">
+                <button
+                    class="edt-toolbar__btn"
+                    id="langToggle"
+                    type="button"
+                    aria-label="Cambiar idioma"
+                    data-i18n-aria="langToggleLabel"
+                >
+                    <i class="fas fa-language"></i>
+                    <span id="langLabel" class="lang-badge lang-badge--es" aria-live="polite" aria-atomic="true">ESP</span>
+                </button>
+
+                <!-- Casi siempre oculto (syncTranslateMine), pero en móvil lo pulsa #masTraducirRow: no borrarlo -->
+                <button
+                    class="edt-toolbar__btn planner-toolbar__btn--desk"
+                    id="translateMineBtn"
+                    type="button"
+                    hidden
+                    title="Traducir mis textos al español"
+                    aria-label="Traducir mis textos al español"
+                    data-i18n-title="translateMineTooltip"
+                    data-i18n-aria="translateMineTooltip"
+                >
+                    <i class="fas fa-language"></i>
+                    <span class="edt-toolbar__label" data-i18n="translateMineLabel">Traducir textos</span>
+                </button>
+
+                <span class="edt-toolbar__divider"></span>
+
+                <button
+                    class="edt-toolbar__btn"
+                    id="configBtn"
+                    type="button"
+                    aria-controls="configPanel"
+                    aria-expanded="false"
+                    data-i18n-title="toolbarEditTooltip"
+                    data-i18n-aria="toolbarEditTooltip"
+                >
+                    <i class="fas fa-sliders"></i>
+                    <span class="edt-toolbar__label" data-i18n="toolbarEdit">Config</span>
+                </button>
+
+                <button
+                    class="edt-toolbar__btn planner-toolbar__btn--desk"
+                    id="textToggle"
+                    type="button"
+                    aria-controls="textPanel"
+                    aria-expanded="false"
+                    data-i18n-title="toolbarAddTooltip"
+                    data-i18n-aria="toolbarAddTooltip"
+                >
+                    <i class="fas fa-pen"></i>
+                    <span class="edt-toolbar__label" data-i18n="toolbarAdd">Textos</span>
+                </button>
+
+                <span class="edt-toolbar__divider"></span>
+
+                <button
+                    class="edt-toolbar__btn planner-toolbar__btn--desk"
+                    id="designBtn"
+                    type="button"
+                    aria-controls="designPanel"
+                    aria-expanded="false"
+                    data-i18n-title="toolbarDesignTooltip"
+                    data-i18n-aria="toolbarDesignTooltip"
+                >
+                    <i class="fas fa-palette"></i>
+                    <span class="edt-toolbar__label" data-i18n="toolbarDesign">Diseño</span>
+                </button>
+
+                <button
+                    class="edt-toolbar__btn"
+                    id="btnTemas"
+                    type="button"
+                    aria-controls="temasPanel"
+                    aria-expanded="false"
+                    data-i18n-title="temasTooltip"
+                    data-i18n-aria="temasTooltip"
+                >
+                    <i class="fas fa-swatchbook"></i>
+                    <span class="edt-toolbar__label" data-i18n="lblTemas">Temas</span>
+                </button>
+
+                <span class="edt-toolbar__divider"></span>
+
+                <button
+                    class="edt-toolbar__btn planner-toolbar__btn--desk"
+                    id="btnGuardados"
+                    type="button"
+                    aria-controls="savedPanel"
+                    aria-expanded="false"
+                    data-i18n-title="guardadosTooltip"
+                    data-i18n-aria="guardadosTooltip"
+                >
+                    <i class="fas fa-floppy-disk"></i>
+                    <span class="edt-toolbar__label" data-i18n="lblGuardados">Guardados</span>
+                </button>
+
+                <button
+                    class="edt-toolbar__btn"
+                    id="btnUndo"
+                    type="button"
+                    disabled
+                    data-i18n-title="tipUndo"
+                    data-i18n-aria="ariaUndo"
+                >
+                    <i class="fas fa-rotate-left"></i>
+                    <span class="edt-toolbar__label" data-i18n="lblUndo">Deshacer</span>
+                </button>
+
+                <button
+                    class="edt-toolbar__btn"
+                    id="btnRedo"
+                    type="button"
+                    disabled
+                    data-i18n-title="tipRedo"
+                    data-i18n-aria="ariaRedo"
+                >
+                    <i class="fas fa-rotate-right"></i>
+                    <span class="edt-toolbar__label" data-i18n="lblRedo">Rehacer</span>
+                </button>
+
+                <span class="edt-toolbar__divider"></span>
+
+                <button
+                    class="edt-toolbar__btn planner-toolbar__btn--mas"
+                    id="btnMas"
+                    type="button"
+                    aria-controls="masPanel"
+                    aria-expanded="false"
+                    data-i18n-title="masTooltip"
+                    data-i18n-aria="masTooltip"
+                >
+                    <i class="fas fa-ellipsis-h"></i>
+                    <span class="edt-toolbar__label" data-i18n="lblMas">Más</span>
+                </button>
+
+                <button class="edt-toolbar__btn planner-toolbar__btn--desk" id="exportBtn" type="button">
+                    <i class="fas fa-download"></i>
+                    <span class="edt-toolbar__label" data-i18n="download">Descargar</span>
+                </button>
+            </div>
+
+            <!-- Config panel (abre al pulsar Config) -->
+            <div class="planner-config edt-sheet" id="configPanel" hidden>
+                <div class="planner-config__header" id="configTitle">
+                    <i class="fas fa-sliders" aria-hidden="true"></i>
+                    <span id="configTitleText">Configuración</span>
+                    <button
+                        class="planner-config__reset-btn"
+                        id="configReset"
+                        type="button"
+                        aria-label="Restablecer"
+                        title="Restablecer"
+                        data-i18n-aria="btnReset"
+                        data-i18n-title="btnReset"
+                    >
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+
+                <div class="planner-config__scroll">
+                    <!-- Vista activa: primera decisión de la configuración, común a las 4 vistas -->
+                    <div class="edt-section" id="configViewSection">
+                        <div class="edt-section__header" data-acc-toggle>
+                            <h4 class="edt-section__title">
+                                <i class="fas fa-table-cells-large" aria-hidden="true"></i>
+                                <span data-i18n="sectionView">Vista</span>
+                            </h4>
+                            <span class="edt-section__chevron" aria-hidden="true">
+                                <svg
+                                    width="12"
+                                    height="12"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="m9 18 6-6-6-6" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="planner-config__views" id="viewPills">
+                            <button class="planner-config__view" id="stylePlanner" data-style="planner" type="button">
+                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                <span data-i18n="stylePlanner">Planner</span>
+                            </button>
+                            <button class="planner-config__view" id="styleWeekly" data-style="weekly" type="button">
+                                <i class="fas fa-calendar-week" aria-hidden="true"></i>
+                                <span data-i18n="styleWeekly">Semanal</span>
+                            </button>
+                            <button class="planner-config__view" id="styleMonthly" data-style="monthly" type="button">
+                                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                <span data-i18n="styleMonthly">Mensual</span>
+                            </button>
+                            <button class="planner-config__view" id="styleQuarterly" data-style="quarterly" type="button">
+                                <i class="fas fa-calendar" aria-hidden="true"></i>
+                                <span data-i18n="styleQuarterly">Trimestre</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="edt-section" id="secPeriodPlanner" hidden>
+                        <div class="edt-section__header" data-acc-toggle>
+                            <h4 class="edt-section__title">
+                                <i class="fas fa-calendar-day" aria-hidden="true"></i>
+                                <span data-i18n="sectionMonth">Mes</span>
+                            </h4>
+                            <span class="edt-section__chevron" aria-hidden="true">
+                                <svg
+                                    width="12"
+                                    height="12"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="m9 18 6-6-6-6" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="planner-config__period">
+                            <button
+                                class="planner-config__nav-btn"
+                                id="prevPlannerMonth"
+                                type="button"
+                                aria-label="Mes anterior"
+                                data-i18n-aria="navPrevMonth"
+                            >
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <span class="planner-config__month-label" id="configPlannerMonthLabel"></span>
+                            <button
+                                class="planner-config__nav-btn"
+                                id="nextPlannerMonth"
+                                type="button"
+                                aria-label="Mes siguiente"
+                                data-i18n-aria="navNextMonth"
+                            >
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="edt-section" id="secPeriodMonthly" hidden>
+                        <div class="edt-section__header" data-acc-toggle>
+                            <h4 class="edt-section__title">
+                                <i class="fas fa-calendar-day" aria-hidden="true"></i>
+                                <span data-i18n="sectionMonth">Mes</span>
+                            </h4>
+                            <span class="edt-section__chevron" aria-hidden="true">
+                                <svg
+                                    width="12"
+                                    height="12"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="m9 18 6-6-6-6" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="planner-config__period">
+                            <button
+                                class="planner-config__nav-btn"
+                                id="prevMonthlyCal"
+                                type="button"
+                                aria-label="Mes anterior"
+                                data-i18n-aria="navPrevMonth"
+                            >
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <span class="planner-config__month-label" id="configMonthlyCalLabel"></span>
+                            <button
+                                class="planner-config__nav-btn"
+                                id="nextMonthlyCal"
+                                type="button"
+                                aria-label="Mes siguiente"
+                                data-i18n-aria="navNextMonth"
+                            >
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="edt-section" id="secPeriodQuarter" hidden>
+                        <div class="edt-section__header" data-acc-toggle>
+                            <h4 class="edt-section__title">
+                                <i class="fas fa-calendar" aria-hidden="true"></i>
+                                <span data-i18n="sectionQuarter">Trimestre</span>
+                            </h4>
+                            <span class="edt-section__chevron" aria-hidden="true">
+                                <svg
+                                    width="12"
+                                    height="12"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="m9 18 6-6-6-6" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="planner-config__period">
+                            <button
+                                class="planner-config__nav-btn"
+                                id="prevQuarter"
+                                type="button"
+                                aria-label="Trimestre anterior"
+                                data-i18n-aria="navPrevQuarter"
+                            >
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <span class="planner-config__month-label" id="configQuarterLabel"></span>
+                            <button
+                                class="planner-config__nav-btn"
+                                id="nextQuarter"
+                                type="button"
+                                aria-label="Trimestre siguiente"
+                                data-i18n-aria="navNextQuarter"
+                            >
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Planner config: organizer page toggles -->
+                    <div class="planner-config__body" id="configPlanner" hidden>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="plannerTogglesLabel">
+                                    <i class="fas fa-list-check" aria-hidden="true"></i>
+                                    <span data-i18n="sectionToggles">Secciones</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__selectors" id="plannerToggles"></div>
+                        </div>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="plannerInputsLabel">
+                                    <i class="fas fa-hashtag" aria-hidden="true"></i>
+                                    <span data-i18n="sectionCounts">Cantidades</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__selectors" id="plannerInputs"></div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Calendar config: combined A4h calendar -->
+                    <div class="planner-config__body" id="configMonthlyCal" hidden>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="monthlyCalTogglesLabel">
+                                    <i class="fas fa-toggle-on" aria-hidden="true"></i>
+                                    <span data-i18n="sectionOptions">Opciones</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__selectors" id="monthlyCalToggles"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quarterly config: nav trimestre + opciones -->
+                    <div class="planner-config__body" id="configQuarterly" hidden>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="quarterTogglesLabel">
+                                    <i class="fas fa-toggle-on" aria-hidden="true"></i>
+                                    <span data-i18n="sectionOptions">Opciones</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__selectors" id="quarterToggles"></div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly config: días + título + horas -->
+                    <div class="planner-config__body" id="configWeekly" hidden>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="weeklyDaysLabel">
+                                    <i class="fas fa-calendar-day" aria-hidden="true"></i>
+                                    <span data-i18n="daysBtn">Días</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__pills" id="daysPills"></div>
+                        </div>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="weeklyTitleLabel">
+                                    <i class="fas fa-heading" aria-hidden="true"></i>
+                                    <span data-i18n="toggleTitle">Título</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__title-row" id="weeklyTitleRow"></div>
+                        </div>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="weeklyHoursLabel">
+                                    <i class="fas fa-clock" aria-hidden="true"></i>
+                                    <span data-i18n="hoursBtn">Horarios</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__hours" id="hoursInputs"></div>
+                        </div>
+                    </div>
+
+                    <!-- Festivos: sección FIJA compartida por mensual y trimestral (P3 — antes duplicada por estilo) -->
+                    <div class="planner-config__body" id="configHolidays" hidden>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title" id="holidaysLabel">
+                                    <i class="fas fa-star" aria-hidden="true"></i>
+                                    <span data-i18n="sectionHolidays">Festivos</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__selectors" id="holidaysSelectors"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer: Guardar + Cancelar -->
+                <div class="planner-config__divider"></div>
+                <div class="planner-config__footer">
+                    <button class="edt-action edt-action--cancel" id="configCancel" type="button">
+                        <i class="fas fa-times"></i>
+                        <span data-i18n="cancelBtn">Cancelar</span>
+                    </button>
+                    <button class="edt-action edt-action--save" id="configSave" type="button">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="saveBtn">Guardar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Design panel (abre al pulsar Estilos) -->
+            <div class="planner-config planner-design edt-sheet" id="designPanel" hidden>
+                <div class="planner-config__header">
+                    <i class="fas fa-palette" aria-hidden="true"></i>
+                    <span data-i18n="designTitle">Diseño</span>
+                    <button
+                        class="planner-config__reset-btn"
+                        id="designReset"
+                        type="button"
+                        aria-label="Restablecer"
+                        title="Restablecer"
+                        data-i18n-aria="btnReset"
+                        data-i18n-title="btnReset"
+                    >
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+
+                <div class="planner-config__scroll">
+                    <div class="planner-config__body">
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title">
+                                    <i class="fas fa-heading" aria-hidden="true"></i>
+                                    <span data-i18n="designTitleColor">Color de Títulos</span>
+                                    <span class="planner-design__hint" data-i18n="designOptional">(opcional)</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-design__swatches" id="designTextSwatches"></div>
+                        </div>
+                        <div class="edt-section" id="designBgSection">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title">
+                                    <i class="fas fa-fill-drip" aria-hidden="true"></i>
+                                    <span data-i18n="designBgColor">Color de fondo</span>
+                                    <span class="planner-design__hint" data-i18n="designOptional">(opcional)</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-design__swatches" id="designBgSwatches"></div>
+                        </div>
+                        <div class="edt-section" id="designAccentSection">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title">
+                                    <i class="fas fa-droplet" aria-hidden="true"></i>
+                                    <span data-i18n="designAccentColor">Color de acento</span>
+                                    <span class="planner-design__hint" data-i18n="designOptional">(opcional)</span>
+                                </h4>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-design__swatches" id="designAccentSwatches"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="planner-config__divider"></div>
+                <div class="planner-config__footer">
+                    <button class="edt-action edt-action--cancel" id="designCancel" type="button">
+                        <i class="fas fa-times"></i>
+                        <span data-i18n="cancelBtn">Cancelar</span>
+                    </button>
+                    <button class="edt-action edt-action--save" id="designSave" type="button">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="saveBtn">Guardar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Text panel (abre al pulsar Textos) -->
+            <div class="planner-config planner-design planner-text-panel edt-sheet" id="textPanel" hidden>
+                <div class="planner-config__header">
+                    <i class="fas fa-pen" aria-hidden="true"></i>
+                    <span data-i18n="textPanelTitle">Estilo de textos</span>
+                </div>
+
+                <div class="planner-config__scroll">
+                    <div class="planner-config__body">
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title">
+                                    <i class="fas fa-text-height" aria-hidden="true"></i>
+                                    <span data-i18n="sectionTypography">Tamaño y tipografía</span>
+                                </h4>
+                                <button
+                                    type="button"
+                                    class="edt-section__reset"
+                                    id="textTypoReset"
+                                    title="Restablecer"
+                                    data-i18n-title="btnReset"
+                                    aria-label="Restablecer"
+                                    data-i18n-aria="btnReset"
+                                >
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                        <path d="M3 3v5h5" />
+                                    </svg>
+                                </button>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__grid">
+                                <div class="planner-config__field">
+                                    <label for="textTitleSizeInput" data-i18n="lblTitle">Título</label>
+                                    <div class="planner-config__num-controls">
+                                        <input
+                                            class="planner-config__num-input"
+                                            id="textTitleSizeInput"
+                                            type="number"
+                                            step="1"
+                                            value="0"
+                                            aria-label="Ajuste de título"
+                                            data-i18n-aria="titleSizeInputLabel"
+                                        />
+                                        <button
+                                            class="planner-config__num-btn"
+                                            id="textTitleSizeMinus"
+                                            type="button"
+                                            aria-label="Reducir"
+                                            data-i18n-aria="ariaDecrease"
+                                        >
+                                            −
+                                        </button>
+                                        <button
+                                            class="planner-config__num-btn"
+                                            id="textTitleSizePlus"
+                                            type="button"
+                                            aria-label="Aumentar"
+                                            data-i18n-aria="ariaIncrease"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="planner-config__field">
+                                    <label for="textTitleBoldBtn" data-i18n="toggleBold">Negrita</label>
+                                    <button
+                                        class="planner-config__bold-btn"
+                                        id="textTitleBoldBtn"
+                                        type="button"
+                                        aria-label="Negrita títulos"
+                                        data-i18n-aria="boldTitlesLabel"
+                                        title="Negrita"
+                                        data-i18n-title="toggleBold"
+                                    >
+                                        <b>B</b>
+                                    </button>
+                                </div>
+                                <div class="planner-config__field">
+                                    <label for="textSizeInput" data-i18n="lblText">Texto</label>
+                                    <div class="planner-config__num-controls">
+                                        <input
+                                            class="planner-config__num-input"
+                                            id="textSizeInput"
+                                            type="number"
+                                            step="1"
+                                            value="0"
+                                            aria-label="Ajuste de texto"
+                                            data-i18n-aria="textSizeInputLabel"
+                                        />
+                                        <button
+                                            class="planner-config__num-btn"
+                                            id="textSizeMinus"
+                                            type="button"
+                                            aria-label="Reducir"
+                                            data-i18n-aria="ariaDecrease"
+                                        >
+                                            −
+                                        </button>
+                                        <button
+                                            class="planner-config__num-btn"
+                                            id="textSizePlus"
+                                            type="button"
+                                            aria-label="Aumentar"
+                                            data-i18n-aria="ariaIncrease"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="planner-config__field">
+                                    <label for="textBoldBtn" data-i18n="toggleBold">Negrita</label>
+                                    <button
+                                        class="planner-config__bold-btn"
+                                        id="textBoldBtn"
+                                        type="button"
+                                        aria-label="Negrita textos"
+                                        data-i18n-aria="boldTextsLabel"
+                                        title="Negrita"
+                                        data-i18n-title="toggleBold"
+                                    >
+                                        <b>B</b>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="planner-config__field planner-config__field--full">
+                                <label for="textFontSelect" data-i18n="lblFont">Tipografía</label>
+                                <select
+                                    class="planner-ss planner-design__font-select"
+                                    id="textFontSelect"
+                                    data-ss-font-preview
+                                    aria-label="Tipografía"
+                                    data-i18n-aria="lblFont"
+                                ></select>
+                            </div>
+                        </div>
+                        <div class="edt-section">
+                            <div class="edt-section__header" data-acc-toggle>
+                                <h4 class="edt-section__title">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                    <span data-i18n="overrideSectionTitle">Contenido</span>
+                                </h4>
+                                <button
+                                    type="button"
+                                    class="edt-section__reset"
+                                    id="textOverridesReset"
+                                    title="Restablecer"
+                                    data-i18n-title="btnReset"
+                                    aria-label="Restablecer"
+                                    data-i18n-aria="btnReset"
+                                >
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                        <path d="M3 3v5h5" />
+                                    </svg>
+                                </button>
+                                <span class="edt-section__chevron" aria-hidden="true">
+                                    <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="planner-config__toggles">
+                                <button
+                                    class="planner-config__action-btn planner-config__action-btn--toggle"
+                                    id="toggleFormatsBtn"
+                                    type="button"
+                                    data-i18n-title="toggleFormatsTooltip"
+                                    title="Mostrar todos los textos sin formato (negrita, cursiva, subrayado, listas y colores parciales). No borra nada"
+                                >
+                                    <i class="fas fa-remove-format"></i>
+                                    <span data-i18n="toggleFormatsLabel">Formatos</span>
+                                </button>
+                                <button
+                                    class="planner-config__action-btn planner-config__action-btn--toggle"
+                                    id="toggleAccentBtn"
+                                    type="button"
+                                    data-i18n-title="toggleAccentTooltip"
+                                    title="Pintar todos los textos con el color de acento, en lugar del color elegido en cada celda"
+                                >
+                                    <i class="fas fa-palette"></i>
+                                    <span data-i18n="toggleAccentLabel">Acento</span>
+                                </button>
+                                <button
+                                    class="planner-config__action-btn planner-config__action-btn--toggle"
+                                    id="toggleLibresBtn"
+                                    type="button"
+                                    data-i18n-title="toggleLibresTooltip"
+                                    title="Ocultar los días libres marcados (✦) en las vistas mensual y trimestral, sin borrarlos"
+                                >
+                                    <i class="fas fa-umbrella-beach"></i>
+                                    <span data-i18n="toggleLibresLabel">Libres</span>
+                                </button>
+                                <button
+                                    class="planner-config__action-btn planner-config__action-btn--toggle"
+                                    id="toggleFestivosBtn"
+                                    type="button"
+                                    data-i18n-title="toggleFestivosTooltip"
+                                    title="Ocultar el nombre de todos los festivos en las vistas mensual y trimestral, sin borrarlos"
+                                >
+                                    <i class="fas fa-calendar-xmark"></i>
+                                    <span data-i18n="toggleFestivosLabel">Festivos</span>
+                                </button>
+                            </div>
+                            <div class="planner-config__toggles planner-config__toggles--content">
+                                <button
+                                    class="planner-config__action-btn planner-config__action-btn--danger"
+                                    id="contentClearBtn"
+                                    type="button"
+                                    data-i18n-title="contentClearTooltip"
+                                    title="Borrar los textos de esta vista"
+                                >
+                                    <i class="fas fa-eraser"></i>
+                                    <span data-i18n="contentClearLabel">Limpiar</span>
+                                </button>
+                                <button
+                                    class="edt-action edt-action--restore"
+                                    id="contentRestoreBtn"
+                                    type="button"
+                                    data-i18n-title="contentRestoreTooltip"
+                                    title="Deshacer el último Limpiar de esta sesión"
+                                >
+                                    <i class="fas fa-rotate-left"></i>
+                                    <span data-i18n="contentRestoreLabel">Restaurar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="planner-config__divider"></div>
+                <div class="planner-config__footer">
+                    <button class="edt-action edt-action--cancel" id="textCancel" type="button">
+                        <i class="fas fa-times"></i>
+                        <span data-i18n="cancelBtn">Cancelar</span>
+                    </button>
+                    <button class="edt-action edt-action--save" id="textSave" type="button">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="saveBtn">Guardar</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Temas: los 16 temas de color (antes este panel elegía la vista, que ahora vive en Config) -->
+            <div class="planner-config planner-design edt-sheet" id="temasPanel" hidden>
+                <div class="planner-config__header">
+                    <i class="fas fa-swatchbook" aria-hidden="true"></i>
+                    <span data-i18n="temasTitle">Temas</span>
+                </div>
+
+                <div class="planner-config__scroll">
+                    <div class="planner-config__body">
+                        <div class="planner-design__themes" id="designThemes"></div>
+                    </div>
+                </div>
+
+                <div class="planner-config__divider"></div>
+                <div class="planner-config__footer">
+                    <button class="edt-action edt-action--cancel" id="temasCancel" type="button">
+                        <i class="fas fa-times"></i>
+                        <span data-i18n="cancelBtn">Cancelar</span>
+                    </button>
+                    <button class="edt-action edt-action--save" id="temasSave" type="button">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="saveBtn">Guardar</span>
+                    </button>
+                </div>
+            </div>
+
+            <div
+                class="planner-config edt-sheet"
+                id="masPanel"
+                role="complementary"
+                aria-label="Más"
+                data-i18n-aria="masTitle"
+                hidden
+            >
+                <div class="planner-config__scroll">
+                    <div class="planner-mas">
+                        <button class="planner-mas__row" id="masTraducirRow" type="button" hidden>
+                            <i class="fas fa-language"></i>
+                            <span data-i18n="translateMineTooltip">Traducir mis textos al español</span>
+                            <span class="planner-mas__value" id="masTraducirOff" data-i18n="translateMineOff" hidden>
+                                Desactivada
+                            </span>
+                        </button>
+                        <button class="planner-mas__row planner-mas__row--desktop-only" id="masTextosRow" type="button">
+                            <i class="fas fa-pen"></i>
+                            <span data-i18n="toolbarAdd">Textos</span>
+                        </button>
+                        <button class="planner-mas__row" id="masDisenoRow" type="button">
+                            <i class="fas fa-palette"></i>
+                            <span data-i18n="toolbarDesign">Diseño</span>
+                        </button>
+                        <button class="planner-mas__row" id="masGuardadosRow" type="button">
+                            <i class="fas fa-floppy-disk"></i>
+                            <span data-i18n="lblGuardados">Guardados</span>
+                        </button>
+                        <button class="planner-mas__row" id="masDescargarRow" type="button">
+                            <i class="fas fa-download"></i>
+                            <span data-i18n="download">Descargar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guardados: «Mis planners». Las tarjetas las pinta planner-saved-ui.ts -->
+            <div class="planner-config edt-sheet" id="savedPanel" hidden>
+                <div class="planner-config__header">
+                    <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+                    <span data-i18n="panelSavedTitle">Mis planners</span>
+                </div>
+
+                <div class="planner-config__scroll">
+                    <div class="planner-config__body">
+                        <div class="edt-saved-topbar">
+                            <button
+                                type="button"
+                                class="edt-saved-btn edt-saved-btn--primary"
+                                id="savedShareBtn"
+                                data-i18n-title="savedShareTip"
+                            >
+                                <i class="fas fa-share-nodes" aria-hidden="true"></i>
+                                <span data-i18n="savedShare">Compartir</span>
+                            </button>
+                            <button type="button" class="edt-saved-btn" id="savedImportBtn">
+                                <i class="fas fa-file-import" aria-hidden="true"></i>
+                                <span data-i18n="savedAddCode">Añadir código</span>
+                            </button>
+                        </div>
+                        <div class="edt-saved-grid" id="savedList"></div>
+                    </div>
+                </div>
+
+                <div class="planner-config__divider"></div>
+                <div class="planner-config__footer">
+                    <button class="edt-action edt-action--cancel" id="savedCancel" type="button">
+                        <i class="fas fa-times"></i>
+                        <span data-i18n="cancelBtn">Cancelar</span>
+                    </button>
+                    <button class="edt-action edt-action--save" id="savedSave" type="button">
+                        <i class="fas fa-check"></i>
+                        <span data-i18n="saveBtn">Guardar</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="planner-pages" id="plannerPages">
+                <!-- Página 1: Organizador mensual -->
+                <section class="planner-page" id="page1"></section>
+                <!-- Página 2: Calendario izquierda (Lun-Mié) -->
+                <section class="planner-page" id="page2"></section>
+                <!-- Página 3: Calendario derecha (Jue-Dom) -->
+                <section class="planner-page" id="page3"></section>
+            </div>
+
+            <!-- Modal de exportación -->
+            <div
+                class="planner-export-modal"
+                id="exportModal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="exportModalTitle"
+                aria-describedby="exportModalDesc"
+            >
+                <div class="planner-export-modal__content">
+                    <button
+                        class="planner-export-modal__close-x"
+                        id="closeExportModal"
+                        aria-label="Cerrar"
+                        data-i18n-aria="btnClose"
+                    >
+                        ✕
+                    </button>
+                    <h3 id="exportModalTitle" data-i18n="downloadTitle">Descargar Planificador</h3>
+                    <p id="exportModalDesc" data-i18n="downloadDesc">Descarga cada página individualmente o el PDF completo.</p>
+
+                    <!-- Botones individuales por página -->
+                    <div class="planner-export-modal__pages" id="exportPages">
+                        <button class="planner-export-modal__page-btn" data-page="0">
+                            <i class="fas fa-image"></i>
+                            <span>Organizador</span>
+                            <small>JPG</small>
+                        </button>
+                        <button class="planner-export-modal__page-btn" data-page="1">
+                            <i class="fas fa-image"></i>
+                            <span>Calendario Izq</span>
+                            <small>JPG</small>
+                        </button>
+                        <button class="planner-export-modal__page-btn" data-page="2">
+                            <i class="fas fa-image"></i>
+                            <span>Calendario Der</span>
+                            <small>JPG</small>
+                        </button>
+                    </div>
+
+                    <div class="planner-export-modal__divider"></div>
+
+                    <!-- PDF completo -->
+                    <button class="planner-export-modal__pdf-btn" id="exportPDF">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>PDF Completo</span>
+                        <small>3 páginas A5</small>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <site-footer>
+            <footer class="footer app-footer">
+                <span data-i18n="footerLicense">Software libre, con licencia AGPL-3.0.</span>
+                <a data-repo-link href="#" target="_blank" rel="noopener" data-i18n="headerSourceLabel">Código fuente</a>
+            </footer>
+        </site-footer>
+
+        <!-- Live region para anuncios SR -->
+        <div id="plannerSrAnnouncer" class="planner-sr-only" aria-live="polite" aria-atomic="true"></div>
+
+        <!-- Controller (entry point) -->
+        <script type="module" src="js/planner-controller.ts"></script>
+
+        <!-- La cabecera y el pie: el enlace al código y el permiso de traducción -->
+        <script type="module" src="/components/layout/app-header/app-header.ts"></script>
+    </body>
+</html>

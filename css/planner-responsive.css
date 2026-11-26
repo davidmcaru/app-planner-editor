@@ -1,0 +1,176 @@
+/* ── PLANNER RESPONSIVE — Adaptación a móvil y tablet ── */
+
+/* ── Header fix: ensure desktop/mobile controls don't coexist ── */
+.header-mobile-controls.d-mobile {
+    display: none !important;
+}
+
+@media (max-width: 1024px) {
+    .header-nav.d-desktop {
+        display: none !important;
+    }
+    .header-mobile-controls.d-mobile {
+        display: flex !important;
+    }
+
+    .footer.d-desktop {
+        display: none !important;
+    }
+    site-footer .footer.d-mobile {
+        display: block !important;
+        padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+}
+
+/* ── Desktop (>728px): panel flotante a la izquierda ── */
+@media screen and (min-width: 729px) {
+    .planner-pages {
+        gap: 2.5rem;
+    }
+
+    .planner-page {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .planner-page:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* ── Mobile (<728px): bottom bar horizontal ── */
+@media screen and (max-width: 728px) {
+    .planner-toolbar__btn--desk {
+        display: none;
+    }
+
+    .planner-toolbar__btn--mas {
+        display: flex;
+    }
+
+    /* Prevent horizontal scroll on any planner view */
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    #app {
+        flex-direction: column;
+    }
+
+    /* El sheet lo pinta y lo mueve components/widgets/panel-sheet (clase `edt-sheet` en los 3
+       paneles): posición, asa, footer a sangre y transición del gesto salen de ahí. Aquí solo
+       queda lo que es del planner. */
+    .planner-config__header {
+        flex-shrink: 0;
+        justify-content: flex-start;
+    }
+
+    .planner-config__body {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    }
+    .planner-config__body::-webkit-scrollbar {
+        width: 6px;
+    }
+    .planner-config__body::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .planner-config__body::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+    }
+
+    .planner-config__footer {
+        flex-shrink: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding-top: 10px;
+        margin-top: 4px;
+    }
+
+    :root {
+        --edt-toast-bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 12px);
+        --edt-toast-right: 12px;
+        --edt-toast-left: 12px;
+        --edt-toast-max-width: none;
+    }
+
+    .planner-pages {
+        padding: 2rem 0.75rem calc(5rem + env(safe-area-inset-bottom, 0px));
+        gap: 1.5rem;
+        scroll-snap-type: y mandatory;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .planner-page {
+        scroll-snap-align: center;
+        flex-shrink: 0;
+        transform: scale(0.68);
+        transform-origin: top center;
+        margin-bottom: -65mm;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* ── Muy pequeño (<375px) ── */
+@media screen and (max-width: 374px) {
+    .planner-page {
+        transform: scale(0.58);
+        margin-bottom: -80mm;
+    }
+}
+
+/* ── Weekly A4 landscape responsive ── */
+
+@media screen and (min-width: 729px) {
+    @supports (width: calc(1px / 2px * 1em)) {
+        .planner-pages--weekly .planner-page,
+        .planner-pages--quarterly .planner-page,
+        .planner-pages--monthly .planner-page,
+        .planner-pages--planner-h .planner-page {
+            --page-w: 1122px; /* 297mm de A4 apaisado */
+            --page-h: 794px; /* 210mm */
+            --pscale: min(0.92, calc((100vw - 64px) / var(--page-w)), calc((100vh - 200px) / var(--page-h)));
+            transform: scale(var(--pscale));
+            transform-origin: top center;
+        }
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 728px) {
+    .planner-pages--weekly .planner-page,
+    .planner-pages--quarterly .planner-page,
+    .planner-pages--monthly .planner-page,
+    .planner-pages--planner-h .planner-page {
+        /* 297mm ≈ 1122px; 1122 × 0.32 = 359px, fits phones ≥ 360px */
+        transform: scale(0.32);
+        transform-origin: top center;
+        margin-bottom: -125mm;
+    }
+}
+
+/* ── Export modal responsive ── */
+@media screen and (max-width: 500px) {
+    .planner-export-modal__pages {
+        grid-template-columns: 1fr;
+    }
+
+    .planner-export-modal__page-btn {
+        flex-direction: row;
+        gap: 0.6rem;
+    }
+}

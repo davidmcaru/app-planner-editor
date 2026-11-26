@@ -1,0 +1,25 @@
+body.page-preload {
+    opacity: 0;
+}
+
+/* Recarga que vuelve a su punto de scroll (core/scroll-memory): la página no se revela hasta estar
+   COLOCADA. Sin esto se revelaba arriba y el salto se veía, porque el reveal llega con el `load`
+   (pronto, todo cacheado) y la colocación no puede llegar hasta que el body está pintado. El
+   atributo lo pone y lo quita scroll-memory, que además lleva su propia red de seguridad: si algo
+   fallara, se quita igual y la página aparece. Sin JS no se pone nunca, así que el `<noscript>`
+   no se entera. */
+html[data-scroll-restore='pending'] body {
+    opacity: 0 !important;
+}
+
+body.page-ready {
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+/* Respeta "reducir movimiento": revela sin transición (nunca invisible). */
+@media (prefers-reduced-motion: reduce) {
+    body.page-ready {
+        transition: none;
+    }
+}

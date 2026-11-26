@@ -1,0 +1,321 @@
+.edt-toolbar {
+    position: fixed;
+    left: var(--edt-toolbar-left, 50px);
+    top: var(--edt-toolbar-top, 44%);
+    transform: translateY(-50%);
+    z-index: var(--edt-toolbar-z, 1003);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 6px;
+    border-radius: var(--edt-radius, 16px);
+    background: var(--edt-glass-bg);
+    backdrop-filter: blur(var(--edt-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--edt-blur, 16px));
+    border: 1px solid var(--edt-glass-border);
+    box-shadow: var(--edt-glass-shadow);
+    transition:
+        box-shadow 0.25s ease,
+        left 0.25s ease;
+}
+
+body.has-site-header .edt-toolbar {
+    top: calc(var(--edt-toolbar-top, 44%) + var(--header-height, 50px) / 2);
+}
+
+/* ⚠️ El !important está porque [hidden] tiene que ganar al display:flex de los botones */
+.edt-toolbar [hidden] {
+    display: none !important;
+}
+
+.edt-toolbar__btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: var(--edt-btn-radius, 10px);
+    background: transparent;
+    color: #444;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    line-height: 1;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.edt-toolbar__btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #111;
+}
+
+.edt-toolbar__btn.is-active {
+    background: rgba(0, 0, 0, 0.08);
+    color: #111;
+}
+
+/* Sin pointer-events:none — un botón disabled ya no dispara click, y así el tooltip
+   nativo (title="Deshacer (Ctrl+Z)"…) sigue visible para descubrir el atajo. */
+.edt-toolbar__btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Variantes semánticas (modo edición) ──
+   Colores calibrados para la pill (difieren a propósito de .edt-action:
+   Guardar inactivo gris→activo verde; Cancelar rojo más tenue). */
+.edt-toolbar__btn--reset {
+    background: var(--edt-warn-bg);
+    color: var(--edt-warn-text);
+}
+
+.edt-toolbar__btn--reset:hover {
+    background: var(--edt-warn-bg-hover);
+    color: var(--edt-warn-text-hover);
+}
+
+.edt-toolbar__btn--reset i {
+    opacity: 1;
+}
+
+.edt-toolbar__btn--save {
+    color: #999;
+}
+
+.edt-toolbar__btn--save.is-active {
+    background: rgba(39, 174, 96, 0.1);
+    color: #1a7a3c;
+}
+
+.edt-toolbar__btn--save.is-active:hover {
+    background: rgba(39, 174, 96, 0.2);
+    color: #1a6e35;
+}
+
+.edt-toolbar__btn--cancel {
+    background: rgba(231, 76, 60, 0.08);
+    color: #c0392b;
+}
+
+.edt-toolbar__btn--cancel:hover {
+    background: rgba(231, 76, 60, 0.18);
+    color: #a93226;
+}
+
+.edt-toolbar__btn i {
+    font-size: 14px;
+    opacity: 0.7;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+}
+
+.edt-toolbar__btn:hover i,
+.edt-toolbar__btn.is-active i {
+    opacity: 1;
+}
+
+.edt-toolbar__btn svg {
+    opacity: 0.7;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+}
+
+.edt-toolbar__btn:hover svg,
+.edt-toolbar__btn.is-active svg {
+    opacity: 1;
+}
+
+.edt-toolbar__label {
+    font-size: 13px;
+}
+
+.edt-toolbar__divider {
+    display: block;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+    margin: 2px 0;
+}
+
+.dark-mode .edt-toolbar {
+    background: linear-gradient(180deg, rgba(30, 32, 36, 0.92), rgba(24, 26, 30, 0.85));
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.4),
+        0 0 0 0.5px rgba(255, 255, 255, 0.06);
+}
+
+.dark-mode .edt-toolbar__btn {
+    color: #cfcfcf;
+}
+
+.dark-mode .edt-toolbar__btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.dark-mode .edt-toolbar__btn.is-active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.dark-mode .edt-toolbar__btn--reset {
+    background: rgba(243, 156, 18, 0.14);
+    color: #e8a020;
+}
+
+.dark-mode .edt-toolbar__btn--reset:hover {
+    background: rgba(243, 156, 18, 0.25);
+    color: #f5b333;
+}
+
+.dark-mode .edt-toolbar__btn--save.is-active {
+    background: rgba(39, 174, 96, 0.15);
+    color: #2ecc71;
+}
+
+.dark-mode .edt-toolbar__btn--cancel {
+    background: rgba(231, 76, 60, 0.12);
+    color: #e74c3c;
+}
+
+.dark-mode .edt-toolbar__btn--cancel:hover {
+    background: rgba(231, 76, 60, 0.22);
+    color: #ff6b5b;
+}
+
+.dark-mode .edt-toolbar__divider {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.force-light) .edt-toolbar {
+        background: linear-gradient(180deg, rgba(30, 32, 36, 0.92), rgba(24, 26, 30, 0.85));
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow:
+            0 10px 28px rgba(0, 0, 0, 0.4),
+            0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    }
+
+    html:not(.force-light) .edt-toolbar__btn {
+        color: #cfcfcf;
+    }
+
+    html:not(.force-light) .edt-toolbar__btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+    }
+
+    html:not(.force-light) .edt-toolbar__btn.is-active {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    html:not(.force-light) .edt-toolbar__btn--reset {
+        background: rgba(243, 156, 18, 0.14);
+        color: #e8a020;
+    }
+
+    html:not(.force-light) .edt-toolbar__btn--reset:hover {
+        background: rgba(243, 156, 18, 0.25);
+        color: #f5b333;
+    }
+
+    html:not(.force-light) .edt-toolbar__btn--save.is-active {
+        background: rgba(39, 174, 96, 0.15);
+        color: #2ecc71;
+    }
+
+    html:not(.force-light) .edt-toolbar__btn--cancel {
+        background: rgba(231, 76, 60, 0.12);
+        color: #e74c3c;
+    }
+
+    html:not(.force-light) .edt-toolbar__btn--cancel:hover {
+        background: rgba(231, 76, 60, 0.22);
+        color: #ff6b5b;
+    }
+
+    html:not(.force-light) .edt-toolbar__divider {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+@media (max-width: 1024px) {
+    .edt-toolbar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto !important;
+        transform: none !important;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        border-radius: 0;
+        /* Safe-area iOS (home indicator): la barra crece por debajo, los botones no */
+        box-sizing: border-box;
+        height: calc(var(--edt-bottombar-h, 56px) + env(safe-area-inset-bottom, 0px));
+        padding: 0 4px env(safe-area-inset-bottom, 0px);
+        border-top: 1px solid var(--edt-glass-border);
+        border-right: none;
+        box-shadow: 0 -4px 16px rgba(13, 27, 42, 0.1);
+        /* NUNCA space-around/center con overflow: al desbordar, flexbox recorta el INICIO
+           y lo deja inescroleable (el botón Idioma quedaba cortado e inalcanzable). */
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .edt-toolbar__label {
+        display: none;
+    }
+
+    /* Los botones reparten el ancho y ocupan TODA la altura de la barra (targets 56px de
+       alto; a 360px salen ~35px de ancho). overflow-x:auto queda como red de seguridad. */
+    .edt-toolbar__btn {
+        flex: 1 1 0;
+        min-width: 32px;
+        height: 100%;
+        flex-direction: column;
+        justify-content: center;
+        padding: 6px 2px;
+        gap: 2px;
+        width: auto;
+        border-radius: 0;
+    }
+
+    .edt-toolbar__btn i {
+        font-size: 18px;
+    }
+
+    .edt-toolbar__divider {
+        display: none;
+    }
+
+    .dark-mode .edt-toolbar {
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
+    }
+}
+
+@media (max-width: 1024px) and (prefers-color-scheme: dark) {
+    html:not(.force-light) .edt-toolbar {
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
+    }
+}
+
+@media (max-width: 728px) {
+    .edt-toolbar__label {
+        display: block;
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

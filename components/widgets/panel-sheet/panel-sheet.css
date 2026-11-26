@@ -1,0 +1,160 @@
+/* Fuera de móvil el asa inyectada no debe ocupar ni mostrar nada. */
+.edt-sheet__handle {
+    display: none;
+}
+
+@media (max-width: 728px) {
+    /* Asa: área táctil ancha arriba del panel. touch-action:none para que el
+       navegador no se quede el gesto (el bloqueo de scroll lo hace el JS en move). */
+    .edt-sheet__handle {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 26px;
+        padding: 8px 0 6px;
+        margin: 0 0 2px;
+        cursor: grab;
+        touch-action: none;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+    .edt-sheet__handle.is-grabbing {
+        cursor: grabbing;
+    }
+
+    .edt-sheet__handle-bar {
+        display: block;
+        width: 36px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(13, 27, 42, 0.22);
+        transition: background 0.15s ease;
+    }
+    .edt-sheet__handle.is-grabbing .edt-sheet__handle-bar {
+        background: rgba(13, 27, 42, 0.38);
+    }
+
+    /* Cuerpo scrolleable (lo crea el JS envolviendo lo no-fijado). Es el ÚNICO
+       scroller: cabecera/asa arriba y footer abajo quedan fijos (flex-shrink:0 lo
+       pone la app o el skin en .edt-sheet__footer). */
+    .edt-sheet__body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Durante el gesto: congelar los backdrop-filter internos, que si no
+       re-muestrean el fondo en cada frame ("petardeo" del chrome). Solo mientras
+       se arrastra: permanente emborrona el texto por sub-píxel. (El motor
+       redimensiona por altura: will-change:transform ya no aporta nada.) */
+    .is-drag-live,
+    .is-drag-live * {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .edt-sheet.edt-sheet:not([hidden]) {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        right: 0;
+        width: 100%;
+        top: auto;
+        bottom: 0;
+        z-index: calc(var(--edt-toolbar-z, 1003) + 7);
+        box-sizing: border-box;
+        height: auto;
+        max-height: 55vh;
+        max-height: 55dvh;
+        overflow: hidden; /* el scroller es .edt-sheet__body / el propio de la app */
+        margin: 0;
+        /* Sin padding inferior visual: el footer va a sangre; safe-area para
+           paneles SIN footer (el footer la re-absorbe con margin negativo). */
+        padding: 12px 12px env(safe-area-inset-bottom, 0px);
+        border: none;
+        border-top: 1px solid var(--edt-glass-border, rgba(13, 27, 42, 0.12));
+        border-radius: var(--edt-radius, 16px) var(--edt-radius, 16px) 0 0;
+        background: linear-gradient(180deg, #ffffff, #f6f9fc);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        box-shadow: 0 -12px 32px rgba(13, 27, 42, 0.2);
+        transform: none;
+        opacity: 1;
+        transition:
+            transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.18s ease;
+    }
+
+    /* Entrada "subida corta + fade" al mostrarse. Progressive
+       enhancement: navegadores sin @starting-style muestran el sheet al instante,
+       como hasta ahora. */
+    @starting-style {
+        .edt-sheet.edt-sheet:not([hidden]) {
+            transform: translateY(18px);
+            opacity: 0;
+        }
+    }
+
+    /* Footer (Guardar/Cancelar…): fijo abajo, a sangre sobre el padding del sheet
+       y con fondo sólido; absorbe la safe-area (los botones quedan por encima del
+       home indicator). La clase la pone el motor sobre los `pinnedBottom`. */
+    .edt-sheet.edt-sheet:not([hidden]) > .edt-sheet__footer {
+        flex-shrink: 0;
+        margin-left: -12px;
+        margin-right: -12px;
+        margin-bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+        padding-top: 12px;
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid rgba(13, 27, 42, 0.08);
+        background: #f6f9fc;
+    }
+
+    /* T2: con un sheet abierto (body.edt-sheet-open, lo pone el motor) la bottom
+       bar se oculta y su franja la ocupa el footer del sheet. Mismo patrón que
+       escritorio (toolbar oculto con panel abierto). Cerrar el sheet la restaura. */
+    body.edt-sheet-open .edt-toolbar {
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .dark-mode .edt-sheet__handle-bar {
+        background: rgba(255, 255, 255, 0.26);
+    }
+    .dark-mode .edt-sheet__handle.is-grabbing .edt-sheet__handle-bar {
+        background: rgba(255, 255, 255, 0.42);
+    }
+    .dark-mode .edt-sheet.edt-sheet:not([hidden]) {
+        border-top-color: rgba(255, 255, 255, 0.12);
+        background: linear-gradient(180deg, #1e2024, #181a1e);
+        box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.45);
+    }
+    .dark-mode .edt-sheet.edt-sheet:not([hidden]) > .edt-sheet__footer {
+        border-top-color: rgba(255, 255, 255, 0.08);
+        background: #181a1e;
+    }
+}
+
+@media (max-width: 728px) and (prefers-color-scheme: dark) {
+    html:not(.force-light) .edt-sheet__handle-bar {
+        background: rgba(255, 255, 255, 0.26);
+    }
+    html:not(.force-light) .edt-sheet__handle.is-grabbing .edt-sheet__handle-bar {
+        background: rgba(255, 255, 255, 0.42);
+    }
+    html:not(.force-light) .edt-sheet.edt-sheet:not([hidden]) {
+        border-top-color: rgba(255, 255, 255, 0.12);
+        background: linear-gradient(180deg, #1e2024, #181a1e);
+        box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.45);
+    }
+    html:not(.force-light) .edt-sheet.edt-sheet:not([hidden]) > .edt-sheet__footer {
+        border-top-color: rgba(255, 255, 255, 0.08);
+        background: #181a1e;
+    }
+}

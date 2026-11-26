@@ -1,0 +1,131 @@
+.edt-action {
+    padding: 9px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* Deshabilitado (p.ej. congelado durante un guardado async): gris + not-allowed.
+   Los navegadores IGNORAN cursor:not-allowed sobre botones disabled (inertes) →
+   pointer-events:none deja pasar el puntero al contenedor, que pinta el cursor
+   con la clase .edt-action-frozen (la pone el JS al congelar). */
+.edt-action:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.edt-action-frozen {
+    cursor: not-allowed;
+}
+
+.edt-action--cancel {
+    background: var(--edt-danger-bg);
+    color: var(--edt-danger-text);
+    border: 2px solid var(--edt-danger-border);
+}
+
+.edt-action--cancel:not(:disabled):hover {
+    background: var(--edt-danger-bg-hover);
+    border-color: var(--edt-danger-border-hover);
+}
+
+.edt-action--save {
+    background: var(--edt-success-bg);
+    color: var(--edt-success-text);
+    border: 2px solid var(--edt-success-border);
+}
+
+.edt-action--save:not(:disabled):hover {
+    background: var(--edt-success-bg-hover);
+    border-color: var(--edt-success-border-hover);
+}
+
+.edt-action--restore {
+    background: var(--edt-warn-bg);
+    color: var(--edt-warn-text);
+    border: 2px solid var(--edt-warn-border);
+}
+
+.edt-action--restore:not(:disabled):hover {
+    background: var(--edt-warn-bg-hover);
+    border-color: var(--edt-warn-border-hover);
+    color: var(--edt-warn-text-hover);
+}
+
+.edt-action--translate {
+    background: var(--edt-accent-bg);
+    color: var(--edt-accent-text);
+    border: 2px solid var(--edt-accent-border);
+}
+
+.edt-action--translate:not(:disabled):hover {
+    background: var(--edt-accent-bg-hover);
+    border-color: var(--edt-accent-border-hover);
+    color: var(--edt-accent-text-hover);
+}
+
+/* Lo que borra: el que confirma, en rojo, y su Cancelar, en gris, con `cancelClassName` del
+   diálogo. Dos rojos a la vez confunden: el Cancelar rojo de siempre no va con este OK */
+.edt-action--danger {
+    background: var(--edt-danger-bg);
+    color: var(--edt-danger-text);
+    border: 2px solid var(--edt-danger-border);
+}
+
+.edt-action--danger:not(:disabled):hover {
+    background: var(--edt-danger-bg-hover);
+    border-color: var(--edt-danger-border-hover);
+}
+
+.edt-action--neutral {
+    background: var(--edt-tgl-bg);
+    color: var(--edt-tgl-text);
+    border: 2px solid var(--edt-tgl-border);
+}
+
+.edt-action--neutral:not(:disabled):hover {
+    background: color-mix(in srgb, var(--edt-tgl-text) 14%, transparent);
+    border-color: var(--edt-btn-border-hover);
+}
+
+/* ── Dark: Cancelar en ROJOS translúcidos, versión oscura del cancel claro.
+      Mismos tonos que el Cancelar dark de la toolbar. Restaurar/Traducir ya
+      cambian vía tokens. ── */
+.dark-mode .edt-action--cancel,
+.dark-mode .edt-action--danger {
+    background: rgba(231, 76, 60, 0.12);
+    border-color: rgba(231, 76, 60, 0.35);
+    color: #e74c3c;
+}
+
+.dark-mode .edt-action--cancel:not(:disabled):hover,
+.dark-mode .edt-action--danger:not(:disabled):hover {
+    background: rgba(231, 76, 60, 0.22);
+    border-color: rgba(231, 76, 60, 0.5);
+    color: #ff6b5b;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.force-light) .edt-action--cancel,
+    html:not(.force-light) .edt-action--danger {
+        background: rgba(231, 76, 60, 0.12);
+        border-color: rgba(231, 76, 60, 0.35);
+        color: #e74c3c;
+    }
+
+    html:not(.force-light) .edt-action--cancel:not(:disabled):hover,
+    html:not(.force-light) .edt-action--danger:not(:disabled):hover {
+        background: rgba(231, 76, 60, 0.22);
+        border-color: rgba(231, 76, 60, 0.5);
+        color: #ff6b5b;
+    }
+}

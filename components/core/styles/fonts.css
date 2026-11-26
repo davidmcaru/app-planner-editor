@@ -1,0 +1,10 @@
+/* La letra de la interfaz. El archivo está en `public/fonts/`, con su licencia. */
+/* Variable: una cara cubre 100–900; con un peso fijo el navegador no sintetiza y todos los pesos salen iguales */
+/* 'woff2' a secas, NO 'woff2-variations': la cadena desconocida descarta la fuente; variable la hace el rango */
+@font-face {
+    font-family: 'Inter';
+    src: url('/fonts/Inter-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}

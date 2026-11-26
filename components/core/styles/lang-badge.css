@@ -1,0 +1,75 @@
+.lang-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700; /* bold moderado */
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    /* Default = español por si la clase modificadora aún no se ha aplicado */
+    background: rgba(70, 130, 220, 0.14);
+    color: #2b5fa6;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.lang-badge--es {
+    background: rgba(70, 130, 220, 0.14);
+    color: #2b5fa6;
+} /* azul */
+.lang-badge--ja {
+    background: rgba(214, 64, 64, 0.16);
+    color: #c0392b;
+} /* rojo */
+.lang-badge--en {
+    background: rgba(46, 160, 90, 0.16);
+    color: #1e7e45;
+} /* verde */
+.lang-badge--de {
+    background: rgba(190, 140, 30, 0.18);
+    color: #8a6d0f;
+} /* ámbar */
+
+/* Los selectores `html:not(.force-light) .lang-badge--*` estaban FUERA del
+   @media dark, así que aplicaban la paleta oscura también en modo claro (mientras no hubiera
+   .force-light). Ahora solo el toggle manual `.dark-mode` va aquí; la detección por sistema
+   vive dentro del @media (prefers-color-scheme: dark) de abajo. */
+/* El badge NO usa el acento de marca: cada idioma tiene su color y en oscuro cada uno es su propia versión pastel. El español
+   era el ÚNICO que cambiaba de familia al pasar a oscuro — se quedó en cian (#8fd9ec, primo del
+   acento viejo) mientras en claro era azul. Ahora sigue el mismo patrón que sus tres hermanos. */
+.dark-mode .lang-badge--es {
+    background: rgba(130, 180, 240, 0.2);
+    color: #9dbdf0;
+}
+.dark-mode .lang-badge--ja {
+    background: rgba(240, 120, 120, 0.2);
+    color: #f3a8a8;
+}
+.dark-mode .lang-badge--en {
+    background: rgba(110, 220, 150, 0.2);
+    color: #93e3b1;
+}
+.dark-mode .lang-badge--de {
+    background: rgba(232, 202, 112, 0.2);
+    color: #e8ca70;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.force-light) .lang-badge--es {
+        background: rgba(130, 180, 240, 0.2);
+        color: #9dbdf0;
+    }
+    html:not(.force-light) .lang-badge--ja {
+        background: rgba(240, 120, 120, 0.2);
+        color: #f3a8a8;
+    }
+    html:not(.force-light) .lang-badge--en {
+        background: rgba(110, 220, 150, 0.2);
+        color: #93e3b1;
+    }
+    html:not(.force-light) .lang-badge--de {
+        background: rgba(232, 202, 112, 0.2);
+        color: #e8ca70;
+    }
+}

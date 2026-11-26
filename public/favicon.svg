@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <defs>
+        <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3a8be0" />
+            <stop offset="1" stop-color="#1b4f8f" />
+        </linearGradient>
+    </defs>
+    <rect width="64" height="64" rx="14" fill="url(#fondo)" />
+    <rect x="14" y="14" width="36" height="38" rx="4" fill="#fff" />
+    <path d="M18 14h28a4 4 0 0 1 4 4v6H14v-6a4 4 0 0 1 4-4z" fill="#d8e6f6" />
+    <rect x="19" y="17.4" width="14" height="3.2" rx="1.6" fill="#1b4f8f" />
+    <rect x="21.2" y="9.5" width="3.6" height="8.5" rx="1.8" fill="#1b4f8f" />
+    <rect x="39.2" y="9.5" width="3.6" height="8.5" rx="1.8" fill="#1b4f8f" />
+    <g fill="#c5d5e8">
+        <rect x="18" y="28" width="5.6" height="5.6" rx="1.2" />
+        <rect x="25.4" y="28" width="5.6" height="5.6" rx="1.2" />
+        <rect x="32.8" y="28" width="5.6" height="5.6" rx="1.2" />
+        <rect x="40.2" y="28" width="5.6" height="5.6" rx="1.2" />
+        <rect x="18" y="35.4" width="5.6" height="5.6" rx="1.2" />
+        <rect x="25.4" y="35.4" width="5.6" height="5.6" rx="1.2" />
+        <rect x="40.2" y="35.4" width="5.6" height="5.6" rx="1.2" />
+        <rect x="18" y="42.8" width="5.6" height="5.6" rx="1.2" />
+        <rect x="25.4" y="42.8" width="5.6" height="5.6" rx="1.2" />
+        <rect x="32.8" y="42.8" width="5.6" height="5.6" rx="1.2" />
+    </g>
+    <rect x="32.8" y="35.4" width="5.6" height="5.6" rx="1.2" fill="#3a8be0" />
+</svg>

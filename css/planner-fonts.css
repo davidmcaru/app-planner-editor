@@ -1,0 +1,167 @@
+/* ── PLANNER — Tipografías. Los archivos están en `public/fonts/`, con la licencia de cada familia.
+   Las caras que hay aquí deben estar también en el registro (`components/features/fonts/font-registry.ts`),
+   que es de donde las toma la exportación: si una está en pantalla y no en el registro, el JPG sale con otra
+   letra. Pacifico e Indie Flower no tienen cara 700: su negrita es sintética a propósito.
+   Playfair Display y Dancing Script son fuentes variables: un solo archivo sirve las dos caras. ── */
+
+/* Noto Serif — Clásico */
+@font-face {
+    font-family: 'Noto Serif';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/NotoSerif-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Noto Serif';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/NotoSerif-Bold.woff2) format('woff2');
+}
+
+/* Playfair Display — Gris */
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/PlayfairDisplay-Variable.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/PlayfairDisplay-Variable.woff2) format('woff2');
+}
+
+/* Roboto — Océano */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/Roboto-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/Roboto-Bold.woff2) format('woff2');
+}
+
+/* Merriweather — Arena */
+@font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/Merriweather-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/Merriweather-Bold.woff2) format('woff2');
+}
+
+/* Open Sans — Bosque */
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/OpenSans-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/OpenSans-Bold.woff2) format('woff2');
+}
+
+/* Dancing Script — Rosa */
+@font-face {
+    font-family: 'Dancing Script';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/DancingScript-Variable.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Dancing Script';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/DancingScript-Variable.woff2) format('woff2');
+}
+
+/* Indie Flower — Lavanda */
+@font-face {
+    font-family: 'Indie Flower';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/IndieFlower-Regular.woff2) format('woff2');
+}
+
+/* Caveat — Menta */
+@font-face {
+    font-family: 'Caveat';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/Caveat-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Caveat';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/Caveat-Bold.woff2) format('woff2');
+}
+
+/* Lato — Sans-serif limpio */
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/Lato-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/Lato-Bold.woff2) format('woff2');
+}
+
+/* Pacifico — Script retro */
+@font-face {
+    font-family: 'Pacifico';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/Pacifico-Regular.woff2) format('woff2');
+}
+
+/* Courier Prime — Monospace */
+@font-face {
+    font-family: 'Courier Prime';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/CourierPrime-Regular.woff2) format('woff2');
+}
+@font-face {
+    font-family: 'Courier Prime';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/fonts/CourierPrime-Bold.woff2) format('woff2');
+}

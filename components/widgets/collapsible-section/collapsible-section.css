@@ -1,0 +1,91 @@
+.edt-section {
+    background: #f8f9fa;
+    border: 1px solid #e8ecef;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.postal-panel__section {
+    margin-bottom: 6px;
+}
+.postal-panel__section + .postal-panel__section {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.edt-section__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 6px;
+    padding: 3px 4px;
+    margin: 0 -4px 8px;
+    transition: background 0.15s ease;
+}
+.edt-section__header:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.edt-section__title {
+    flex: 1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.edt-section__title i {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* El botón de reinicio (.edt-section__reset) se estila desde el componente compartido
+   components/core/styles/editor-icon-btn.css. */
+
+.edt-section__chevron,
+.postal-acc__chevron {
+    display: flex;
+    align-items: center;
+    color: #aaa;
+    flex-shrink: 0;
+}
+.edt-section__chevron svg,
+.postal-acc__chevron svg {
+    transition: transform 0.2s ease;
+    transform: rotate(90deg);
+}
+.edt-section.is-collapsed .edt-section__chevron svg,
+.postal-panel__section.is-collapsed .postal-acc__chevron svg {
+    transform: rotate(0deg);
+}
+.edt-section.is-collapsed > :not(.edt-section__header) {
+    display: none !important;
+}
+.edt-section.is-collapsed {
+    margin-bottom: 0;
+    /* Colapsado compacto: menos padding vertical para que la card quede como una barra fina
+       alrededor de la cabecera. */
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.edt-section.is-collapsed > .edt-section__header {
+    margin-bottom: 0;
+}
+
+body.dark-mode .edt-section {
+    background: #252525;
+    border-color: #333;
+}
+body.dark-mode .edt-section__header:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+body.dark-mode .edt-section__title {
+    color: #cfd3d8;
+}

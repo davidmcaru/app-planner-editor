@@ -1,0 +1,138 @@
+/* ⚠️ DUPLICADA A MANO en el CSS crítico de index.html, que pinta antes de que esto cargue: tocar un
+   valor obliga a replicarlo allí */
+:root {
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --color-background: #ffffff;
+    --color-background-rgb: 255, 255, 255; /* 🆕 For RGBA opacity handling */
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #666;
+    --color-accent: #2570c2;
+    /* Mismo color en componentes: evita reescribir el rgba() a mano en cada velo y sombra.
+       Se usa como `rgba(var(--color-accent-rgb), 0.15)`. */
+    --color-accent-rgb: 37, 112, 194;
+    --color-dark-blue: #0a192f;
+    /* ⚠️ Aclarado de #f0f2f5 en el repintado: con el gris viejo, `--color-accent` como texto
+       pequeño encima daba 4.48:1 — fallaba AA por 0.02. Con este da 4.65:1. */
+    --color-light-gray-bg: #f4f6f9;
+    /* Un fondo apenas teñido: cambiarlo en cualquiera de los dos temas es UNA línea, y los dos son la
+       misma claridad girada al tono del acento */
+    --color-surface-tint: #eef4fa;
+    /* Token propio porque es OSCURA en los dos temas: el pie no se aclara con el tema claro */
+    --color-footer-band: #164374;
+    --color-footer-band-rgb: 22, 67, 116;
+    /* El hover RELLENA en opaco, no con velo. */
+    --pill-ink: #2570c2;
+    --pill-on-ink: #ffffff;
+    --pill-border: rgba(0, 0, 0, 0.14);
+    --pill-hover-bg: #2570c2;
+    /* Variante VERDE (`.pill--layer`): lo que no es un destino ni una etiqueta, sino un estado
+       o un conmutador. */
+    --pill-layer-ink: #168449;
+    --pill-layer-on-ink: #ffffff;
+    --pill-layer-border: rgba(0, 0, 0, 0.14);
+    --pill-layer-hover-bg: #168449;
+    /* Variante ÁMBAR (`.pill--home`): un punto de partida o lo que está en curso */
+    --pill-home: #ae5f22;
+    --pill-home-ink: #ffffff;
+    --pill-home-border: rgba(0, 0, 0, 0.14);
+    --color-border: #cccccc;
+    --border-radius-pill: 50px;
+    --border-radius-card: 15px;
+    --transition-fast: all 0.3s ease;
+    color-scheme: light dark; /* Permite que el navegador ajuste controles nativos */
+}
+
+/* 🔒 FORZAR modo light cuando NO hay clase dark-mode (override de prefers-color-scheme) */
+html:not(.dark-mode),
+body:not(.dark-mode) {
+    --color-background: #ffffff;
+    --color-background-rgb: 255, 255, 255;
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #666;
+    --color-accent: #2570c2;
+    --color-accent-rgb: 37, 112, 194;
+    --color-dark-blue: #0a192f;
+    --color-light-gray-bg: #f4f6f9;
+    --color-surface-tint: #eef4fa;
+    --color-footer-band: #164374;
+    --color-footer-band-rgb: 22, 67, 116;
+    /* El hover RELLENA en opaco, no con velo. */
+    --pill-ink: #2570c2;
+    --pill-on-ink: #ffffff;
+    --pill-border: rgba(0, 0, 0, 0.14);
+    --pill-hover-bg: #2570c2;
+    /* Variante VERDE (`.pill--layer`): lo que no es un destino ni una etiqueta, sino un estado
+       o un conmutador. */
+    --pill-layer-ink: #168449;
+    --pill-layer-on-ink: #ffffff;
+    --pill-layer-border: rgba(0, 0, 0, 0.14);
+    --pill-layer-hover-bg: #168449;
+    /* Variante ÁMBAR (`.pill--home`): un punto de partida o lo que está en curso */
+    --pill-home: #ae5f22;
+    --pill-home-ink: #ffffff;
+    --pill-home-border: rgba(0, 0, 0, 0.14);
+    --color-border: #cccccc;
+}
+
+/* 🎯 Dark Mode - Auto detection (system preference) - Solo si no hay override manual */
+/* El selector era `html:not(...) :root` (:root como descendiente de html) →
+   imposible, nunca aplicaba. `:root` ES el <html>, así que las clases van en el propio :root. */
+/* ⚠️ El `body` va con el `:root` y NO sobra: arriba recibe su PROPIA copia de los tokens claros, que
+   gana a la heredada. Sin esto, sin JS y con SO oscuro salía body blanco. */
+@media (prefers-color-scheme: dark) {
+    :root:not(.force-light):not(.force-dark),
+    body:not(.dark-mode):not(.force-light):not(.force-dark) {
+        --color-background: #0a0a0a;
+        --color-background-rgb: 10, 10, 10;
+        --color-text-primary: #ffffff;
+        --color-text-secondary: #b0b0b0;
+        /* ⚠️ NO subirlo a blanco puro: --color-text-primary YA es #ffffff y el titular quedaría
+           indistinguible del párrafo. A 16.09:1 sobra contraste */
+        --color-accent: #bdf0ff;
+        --color-accent-rgb: 189, 240, 255;
+        --color-dark-blue: #e0e7ff; /* Azul muy claro (invertido) */
+        --color-light-gray-bg: #1a1a1a;
+        --color-surface-tint: #151515;
+        --color-footer-band: #0f0f0f;
+        --color-footer-band-rgb: 15, 15, 15;
+        --pill-ink: #bdf0ff;
+        --pill-on-ink: #0a0a0a;
+        --pill-border: rgba(255, 255, 255, 0.18);
+        --pill-hover-bg: #bdf0ff;
+        --pill-layer-ink: #6ee7a8;
+        --pill-layer-on-ink: #06222b;
+        --pill-layer-border: rgba(110, 231, 168, 0.35);
+        --pill-layer-hover-bg: #6ee7a8;
+        --pill-home: #ffd98a;
+        --pill-home-ink: #06222b;
+        --pill-home-border: rgba(255, 217, 138, 0.26);
+        --color-border: #333333;
+    }
+}
+
+html.dark-mode,
+body.dark-mode {
+    --color-background: #0a0a0a;
+    --color-background-rgb: 10, 10, 10;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #b0b0b0;
+    --color-accent: #bdf0ff;
+    --color-accent-rgb: 189, 240, 255;
+    --color-dark-blue: #e0e7ff;
+    --color-light-gray-bg: #1a1a1a;
+    --color-surface-tint: #151515;
+    --color-footer-band: #0f0f0f;
+    --color-footer-band-rgb: 15, 15, 15;
+    --pill-ink: #bdf0ff;
+    --pill-on-ink: #0a0a0a;
+    --pill-border: rgba(255, 255, 255, 0.18);
+    --pill-hover-bg: #bdf0ff;
+    --pill-layer-ink: #6ee7a8;
+    --pill-layer-on-ink: #06222b;
+    --pill-layer-border: rgba(110, 231, 168, 0.35);
+    --pill-layer-hover-bg: #6ee7a8;
+    --pill-home: #ffd98a;
+    --pill-home-ink: #06222b;
+    --pill-home-border: rgba(255, 217, 138, 0.26);
+    --color-border: #333333;
+}
